@@ -1,0 +1,12 @@
+{
+  "name": "destiny",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Destiny · 聊天式端侧 Agent（mibot × Mika 融合，UI 与账户参考 Toki）",
+  "scripts": {
+    "serve": "node serve.js",
+    "cap:add": "cap add android",
+    "cap:sync": "cap sync android"
+  },
+  "devDependencies": {}
+}

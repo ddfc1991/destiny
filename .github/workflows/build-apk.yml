@@ -1,0 +1,70 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Prepare web assets
+        run: |
+          mkdir -p www
+          cp index.html destiny.css destiny-app.js destiny-core.js destiny-data.js destiny-icon.svg manifest.webmanifest sw.js www/
+
+      - name: Capacitor add / sync android
+        run: |
+          npm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 --no-audit --no-fund
+          npx cap add android || true
+          npx cap sync android
+
+      - name: Build debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk Destiny-debug.apk
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Destiny-debug-apk
+          path: Destiny-debug.apk
+
+      - name: Rolling release (latest)
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-latest
+          name: Destiny APK (latest)
+          body: |
+            Destiny 安卓调试包（debug 签名，可直接安装）。
+            - UI 与账户参考 Toki：聊天流主界面 + Google/邮箱/手机号登录
+            - 本地确定性引擎，不含真实模型调用
+          files: Destiny-debug.apk
+          make_latest: true
+
+      - name: Release on version tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Destiny-debug.apk

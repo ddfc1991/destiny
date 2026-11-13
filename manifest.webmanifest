@@ -1,0 +1,15 @@
+{
+  "name": "Destiny · Agent 应用",
+  "short_name": "Destiny",
+  "description": "聊天式端侧 Agent：mibot 自托管控制面 × Mika 端侧执行，UI 参考 Toki",
+  "start_url": "index.html",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3EEE6",
+  "theme_color": "#F3EEE6",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "destiny-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "appId": "com.destiny.agent",
+  "appName": "Destiny",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": true
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
