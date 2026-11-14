@@ -184,7 +184,7 @@ fun ListRow(
                 overflow = TextOverflow.Ellipsis
             )
             if (subtitle != null) {
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(8.dp))
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
@@ -272,7 +272,7 @@ fun Pill(
             .clip(CircleShape)
             .background(c.copy(alpha = 0.13f))
             .border(1.dp, c.copy(alpha = 0.3f), CircleShape)
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(horizontal = 8.dp, vertical = 8.dp)
     ) {
         Text(
             text,
@@ -369,7 +369,7 @@ fun StatCell(
             style = MaterialTheme.typography.displaySmall,
             color = if (accent) a.champagne else a.ink
         )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(8.dp))
         Text(
             label,
             style = MaterialTheme.typography.labelSmall,

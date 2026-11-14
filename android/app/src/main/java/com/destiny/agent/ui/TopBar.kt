@@ -45,7 +45,8 @@ fun DestinyTopBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (onBack != null) {
-            IconButton(onClick = onBack, modifier = Modifier.size(40.dp)) {
+            // P0：返回键热区 48dp（Android 无障碍最小可点尺寸）
+            IconButton(onClick = onBack, modifier = Modifier.size(48.dp)) {
                 Icon(
                     painter = Icons.ChevronLeft,
                     contentDescription = "返回",
@@ -53,7 +54,7 @@ fun DestinyTopBar(
                     modifier = Modifier.size(20.dp)
                 )
             }
-            Spacer(Modifier.width(6.dp))
+            Spacer(Modifier.width(2.dp))
         }
         Column(Modifier.weight(1f)) {
             Text(
@@ -62,7 +63,7 @@ fun DestinyTopBar(
                 color = a.ink
             )
             if (subtitle != null) {
-                Spacer(Modifier.height(2.dp))
+                Spacer(Modifier.height(8.dp))
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
@@ -91,18 +92,26 @@ fun RoundIconButton(
     val t = tint ?: a.inkSub
     Box(
         modifier
-            .size(40.dp)
+            // P0：热区 48dp，视觉圆底保持 40dp
+            .size(48.dp)
             .clip(CircleShape)
-            .background(if (filled) a.champagne.copy(alpha = 0.14f) else a.elevated)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            painter = icon,
-            contentDescription = contentDescription,
-            tint = t,
-            modifier = Modifier.size(19.dp)
-        )
+        Box(
+            Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(if (filled) a.champagne.copy(alpha = 0.14f) else a.elevated),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = icon,
+                contentDescription = contentDescription,
+                tint = t,
+                modifier = Modifier.size(19.dp)
+            )
+        }
     }
 }
 

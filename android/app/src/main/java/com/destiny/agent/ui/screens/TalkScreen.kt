@@ -38,10 +38,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import com.destiny.agent.data.ChatMessage
 import com.destiny.agent.data.DestinyData
 import com.destiny.agent.data.DestinyStore
@@ -71,7 +75,18 @@ fun TalkScreen(
 ) {
     val state by store.state.collectAsState()
     var input by remember { mutableStateOf("") }
+    var pendingFile by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
+
+    // 附件选择器：用系统 OpenDocument，拿到真实文件名而不是编一句话
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            val name = store.readPickedFile(uri)
+            store.attachFile(name)
+        }
+    }
 
     val msgs = state.chatMsgs
     LaunchedEffect(msgs.size) {
@@ -116,9 +131,21 @@ fun TalkScreen(
                     input = ""
                 }
             },
-            onVoice = { store.sendChat("（语音输入 · 演示版未接 ASR）") },
-            onAttach = { store.sendChat("（附件 · 演示版未接文件选择器）") }
+            onVoice = { store.notify("语音输入还没接上，先用键盘说") },
+            onAttach = { pendingFile = true }
         )
+    }
+
+    // 附件：用系统文件选择器真选，而不是往聊天流里塞一句假消息
+    LaunchedEffect(pendingFile) {
+        if (pendingFile) {
+            pendingFile = false
+            try {
+                launcher.launch(arrayOf("*/*"))
+            } catch (e: Exception) {
+                store.notify("这台设备打不开文件选择器")
+            }
+        }
     }
 }
 
@@ -160,7 +187,7 @@ private fun IntentBar(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         s.reason,
                         style = MaterialTheme.typography.bodySmall,
@@ -172,11 +199,15 @@ private fun IntentBar(
                 Spacer(Modifier.width(8.dp))
                 Box(
                     Modifier
-                        .heightIn(min = 44.dp)
+                        .heightIn(min = 48.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .background(a.champagne)
                         .clickable { store.acceptSuggestion(s.id) }
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp)
+                        // 无障碍：读出这条建议的具体内容，而不是只念「就这么办」
+                        .semantics {
+                            contentDescription = "就这么办：${s.title}。${s.reason}"
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -225,7 +256,7 @@ private fun TalkEmptyState(
         ) {
             ActionRow("明天下午3点提醒我开会", "→ 变成日程") { onPick("明天下午3点提醒我开会") }
             ActionRow("帮我订下周去上海的高铁票", "→ 花钱的会先问你") { onPick("帮我订下周去上海的高铁票") }
-            ActionRow("这个公众号文章讲了什么", "→ 抓要点存进想法") { onPick("这个公众号文章讲了什么") }
+            ActionRow("这个公众号文章讲了什么", "→ 链接能收，正文要你自己开") { onPick("这个公众号文章讲了什么") }
         }
         Spacer(Modifier.height(24.dp))
         // 能力说明用纯文字，不做引导按钮
@@ -237,6 +268,15 @@ private fun TalkEmptyState(
             CapabilityLine(Icons.Brain, "持久记忆", "记住你的偏好，下次不用重复交代")
             CapabilityLine(Icons.Monitor, "云端电脑", "需要点很多次的网页流程，它在云端替你点")
         }
+        Spacer(Modifier.height(16.dp))
+        // 诚实边界：不夸大能力，用户点之前就知道边界在哪
+        Text(
+            "现在的边界：拆解靠本地规则引擎，没接模型端点；\n公众号正文有防盗链，只能收链接，文章要你自己打开看。",
+            style = MaterialTheme.typography.labelSmall,
+            color = a.inkFaint,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -246,11 +286,13 @@ private fun ActionRow(text: String, tag: String, onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
+            .heightIn(min = 48.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, a.hairline, RoundedCornerShape(8.dp))
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .semantics { contentDescription = "$text，$tag" },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -315,7 +357,7 @@ private fun ChainBlock(
                 textAlign = androidx.compose.ui.text.style.TextAlign.End,
                 modifier = Modifier.widthIn(max = 280.dp)
             )
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(8.dp))
             Text(
                 hhmm(msg.t),
                 style = MaterialTheme.typography.labelSmall,
@@ -384,7 +426,7 @@ private fun ChainBlock(
                             color = a.ink
                         )
                     }
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         hhmm(msg.t),
                         style = MaterialTheme.typography.labelSmall,
@@ -420,6 +462,26 @@ private fun ActionBlock(
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, a.hairline, RoundedCornerShape(8.dp))
             .padding(16.dp)
+            // 无障碍：把动作块聚合成一个可朗读的整体，
+            // 否则 TalkBack 会逐个子节点念，读出一堆碎片。
+            .semantics(mergeDescendants = true) {
+                contentDescription = buildString {
+                    append(
+                        when {
+                            failed -> "没做成"
+                            done -> "已完成"
+                            waiting -> "等你点头"
+                            task.status == "queued" -> "排队中"
+                            task.status == "stopped" -> "已停止"
+                            else -> "正在做"
+                        }
+                    )
+                    append("，").append(summary)
+                    if (steps.isNotEmpty()) {
+                        append("，共 ${steps.size} 步，用时 ${(elapsedMs / 1000.0).let { String.format("%.1f", it) }} 秒")
+                    }
+                }
+            }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
@@ -471,7 +533,7 @@ private fun ActionBlock(
         )
 
         if (steps.isNotEmpty()) {
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
             // 步骤日志：动作 + 对象 + 结果
             steps.takeLast(3).forEach { st ->
                 Row(
@@ -571,10 +633,10 @@ private fun Composer(
                 .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .border(1.dp, a.hairline, RoundedCornerShape(8.dp))
-                .padding(horizontal = 8.dp, vertical = 4.dp),
+                .padding(horizontal = 8.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ComposerIcon(Icons.Mic, "语音", onVoice)
+            ComposerIcon(Icons.Mic, "语音输入", onVoice)
             Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
                 if (value.isEmpty()) {
                     Text(
@@ -597,25 +659,35 @@ private fun Composer(
                     cursorBrush = SolidColor(a.champagne),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 12.dp)
+                        .padding(horizontal = 8.dp, vertical = 16.dp)
+                        // 无障碍：给输入框一个可朗读的名字，TalkBack 用户才知道往哪打字
+                        .semantics { contentDescription = "输入你要办的事" }
                 )
             }
-            ComposerIcon(Icons.Clip, "附件", onAttach)
+            ComposerIcon(Icons.Clip, "添加附件", onAttach)
             Spacer(Modifier.width(8.dp))
             Box(
                 Modifier
-                    .size(40.dp)
+                    // P0：点击热区必须 ≥48dp（Android 无障碍标准），视觉圆点保持 40dp
+                    .size(48.dp)
                     .clip(CircleShape)
-                    .background(if (value.isBlank()) a.elevated else a.champagne)
                     .clickable(enabled = value.isNotBlank()) { onSend() },
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    painter = Icons.Send,
-                    contentDescription = "发送",
-                    tint = if (value.isBlank()) a.inkFaint else MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(18.dp)
-                )
+                Box(
+                    Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(if (value.isBlank()) a.elevated else a.champagne),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = Icons.Send,
+                        contentDescription = "发送",
+                        tint = if (value.isBlank()) a.inkFaint else MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
         }
     }
@@ -630,7 +702,8 @@ private fun ComposerIcon(
     val a = LocalAccents.current
     Box(
         Modifier
-            .size(40.dp)
+            // P0：热区放大到 48dp，图标本身仍保持 19dp 视觉尺寸
+            .size(48.dp)
             .clip(CircleShape)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center

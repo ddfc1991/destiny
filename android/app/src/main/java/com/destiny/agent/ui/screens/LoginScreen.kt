@@ -74,7 +74,7 @@ fun LoginScreen(onLogin: (method: String, id: String) -> Unit) {
                 )
             )
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 26.dp)
+            .padding(24.dp)
             .padding(top = 72.dp, bottom = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -82,9 +82,9 @@ fun LoginScreen(onLogin: (method: String, id: String) -> Unit) {
         Box(
             Modifier
                 .size(62.dp)
-                .clip(RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(8.dp))
                 .background(a.champagne.copy(alpha = 0.14f))
-                .border(1.dp, a.champagne.copy(alpha = 0.32f), RoundedCornerShape(20.dp)),
+                .border(1.dp, a.champagne.copy(alpha = 0.32f), RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -95,7 +95,7 @@ fun LoginScreen(onLogin: (method: String, id: String) -> Unit) {
             )
         }
 
-        Spacer(Modifier.height(26.dp))
+        Spacer(Modifier.height(24.dp))
 
         Text(
             "Destiny",
@@ -103,7 +103,7 @@ fun LoginScreen(onLogin: (method: String, id: String) -> Unit) {
             color = a.ink
         )
 
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(8.dp))
 
         Text(
             "不是聊天机器人。\n是真正替你办事的个人智能体。",
@@ -112,7 +112,7 @@ fun LoginScreen(onLogin: (method: String, id: String) -> Unit) {
             textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.height(30.dp))
+        Spacer(Modifier.height(32.dp))
 
         // 三大能力 —— 登录前就说清楚它是什么
         Row(
@@ -124,15 +124,15 @@ fun LoginScreen(onLogin: (method: String, id: String) -> Unit) {
             CapCard(Icons.Monitor, "云端电脑", "复杂网页任务交给云端实例", Modifier.weight(1f))
         }
 
-        Spacer(Modifier.height(34.dp))
+        Spacer(Modifier.height(32.dp))
 
         // 登录方式切换
         Row(
             Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(14.dp))
+                .clip(RoundedCornerShape(8.dp))
                 .background(a.elevated)
-                .padding(3.dp)
+                .padding(8.dp)
         ) {
             listOf(
                 "google" to "Google",
@@ -144,7 +144,7 @@ fun LoginScreen(onLogin: (method: String, id: String) -> Unit) {
                     Modifier
                         .weight(1f)
                         .heightIn(min = 40.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(8.dp))
                         .background(if (on) a.champagne.copy(alpha = 0.16f) else Color.Transparent)
                         .clickable {
                             method = key
@@ -171,14 +171,14 @@ fun LoginScreen(onLogin: (method: String, id: String) -> Unit) {
                         style = MaterialTheme.typography.headlineSmall,
                         color = a.ink
                     )
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         "记忆、日程、已关联的账户会跟着这个账号走。\n" +
                             "不想绑定也可以先进去看 —— 什么都不上传。",
                         style = MaterialTheme.typography.bodySmall,
                         color = a.inkSub
                     )
-                    Spacer(Modifier.height(14.dp))
+                    Spacer(Modifier.height(16.dp))
                     PrimaryButton("继续", icon = Icons.User) {
                         onLogin("google", "boss@destiny.local")
                     }
@@ -192,20 +192,20 @@ fun LoginScreen(onLogin: (method: String, id: String) -> Unit) {
                         style = MaterialTheme.typography.headlineSmall,
                         color = a.ink
                     )
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         if (method == "email") "邮箱只用于找回账号和同步记忆，不发广告。" else "只用于登录，不发短信骚扰。",
                         style = MaterialTheme.typography.bodySmall,
                         color = a.inkSub
                     )
-                    Spacer(Modifier.height(14.dp))
+                    Spacer(Modifier.height(16.dp))
                     IdentField(
                         value = ident,
                         onChange = { ident = it },
                         placeholder = if (method == "email") "you@example.com" else "138 0000 0000",
                         keyboard = if (method == "email") KeyboardType.Email else KeyboardType.Phone
                     )
-                    Spacer(Modifier.height(11.dp))
+                    Spacer(Modifier.height(8.dp))
                     PrimaryButton(
                         text = "继续",
                         icon = Icons.ArrowUpRight,
@@ -224,7 +224,7 @@ fun LoginScreen(onLogin: (method: String, id: String) -> Unit) {
             Modifier
                 .fillMaxWidth()
                 .heightIn(min = 46.dp)
-                .clip(RoundedCornerShape(14.dp))
+                .clip(RoundedCornerShape(8.dp))
                 .clickable { onLogin("guest", "guest") },
             contentAlignment = Alignment.Center
         ) {
@@ -265,19 +265,19 @@ private fun CapCard(
     val a = LocalAccents.current
     Column(
         modifier
-            .clip(RoundedCornerShape(15.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(a.elevated)
-            .border(1.dp, a.hairline, RoundedCornerShape(15.dp))
-            .padding(horizontal = 11.dp, vertical = 13.dp)
+            .border(1.dp, a.hairline, RoundedCornerShape(8.dp))
+            .padding(horizontal = 8.dp, vertical = 16.dp)
     ) {
         Icon(icon, null, tint = a.champagne, modifier = Modifier.size(17.dp))
-        Spacer(Modifier.height(9.dp))
+        Spacer(Modifier.height(8.dp))
         Text(
             title,
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
             color = a.ink
         )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(8.dp))
         Text(
             note,
             style = MaterialTheme.typography.labelSmall,
@@ -298,10 +298,10 @@ private fun IdentField(
         Modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)
-            .clip(RoundedCornerShape(13.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.surface)
-            .border(1.dp, a.hairline, RoundedCornerShape(13.dp))
-            .padding(horizontal = 13.dp, vertical = 12.dp),
+            .border(1.dp, a.hairline, RoundedCornerShape(8.dp))
+            .padding(horizontal = 16.dp, vertical = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
         if (value.isEmpty()) {

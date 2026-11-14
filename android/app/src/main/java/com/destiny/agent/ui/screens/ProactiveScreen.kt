@@ -80,13 +80,13 @@ fun ProactiveScreen(store: DestinyStore, onOpenTask: (String) -> Unit) {
                         style = MaterialTheme.typography.displaySmall,
                         color = a.ink
                     )
-                    Spacer(Modifier.height(10.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         proactiveSummary(state.tasks.size, pending.size, upcoming.size),
                         style = MaterialTheme.typography.bodyMedium,
                         color = a.inkSub
                     )
-                    Spacer(Modifier.height(18.dp))
+                    Spacer(Modifier.height(16.dp))
                     Row {
                         StatCell(
                             value = running.size.toString(),
@@ -115,14 +115,14 @@ fun ProactiveScreen(store: DestinyStore, onOpenTask: (String) -> Unit) {
                             style = MaterialTheme.typography.headlineSmall,
                             color = a.ink
                         )
-                        Spacer(Modifier.height(6.dp))
+                        Spacer(Modifier.height(8.dp))
                         Text(
                             "它只在你确认过的偏好、待批准的做法、或者手头确实空着的时候才开口。\n" +
                                 "多记几条偏好，它会越来越懂该主动做什么。",
                             style = MaterialTheme.typography.bodySmall,
                             color = a.inkSub
                         )
-                        Spacer(Modifier.height(14.dp))
+                        Spacer(Modifier.height(16.dp))
                         GhostButton(
                             "让它现在想一想",
                             icon = Icons.Wand,
@@ -168,7 +168,7 @@ fun ProactiveScreen(store: DestinyStore, onOpenTask: (String) -> Unit) {
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
-                            Spacer(Modifier.height(3.dp))
+                            Spacer(Modifier.height(8.dp))
                             Text(
                                 "${t.app} · ${statusLabel(t.status)}",
                                 style = MaterialTheme.typography.bodySmall,
@@ -210,7 +210,7 @@ fun ProactiveScreen(store: DestinyStore, onOpenTask: (String) -> Unit) {
                         Box(
                             Modifier
                                 .size(42.dp)
-                                .clip(RoundedCornerShape(13.dp))
+                                .clip(RoundedCornerShape(8.dp))
                                 .background(a.champagne.copy(alpha = 0.12f)),
                             contentAlignment = Alignment.Center
                         ) {
@@ -236,7 +236,7 @@ fun ProactiveScreen(store: DestinyStore, onOpenTask: (String) -> Unit) {
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
-                            Spacer(Modifier.height(3.dp))
+                            Spacer(Modifier.height(8.dp))
                             Text(
                                 "${item.app} · ${if (item.repeat == "once") "只这一次" else "重复"}",
                                 style = MaterialTheme.typography.bodySmall,
@@ -285,7 +285,7 @@ private fun SuggestionCard(sug: Suggestion, onAccept: () -> Unit, onDismiss: () 
                         style = MaterialTheme.typography.headlineSmall,
                         color = a.ink
                     )
-                    Spacer(Modifier.height(5.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         sug.reason,
                         style = MaterialTheme.typography.bodySmall,
@@ -293,7 +293,7 @@ private fun SuggestionCard(sug: Suggestion, onAccept: () -> Unit, onDismiss: () 
                     )
                 }
             }
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(16.dp))
             Row {
                 PrimaryButton(
                     "就这么办",

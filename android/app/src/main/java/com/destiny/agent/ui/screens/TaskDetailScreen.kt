@@ -91,7 +91,7 @@ fun TaskDetailScreen(store: DestinyStore, taskId: String, onBack: () -> Unit) {
                         style = MaterialTheme.typography.displaySmall,
                         color = a.ink
                     )
-                    Spacer(Modifier.height(9.dp))
+                    Spacer(Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Pill(task.app, Tone.Champagne)
                         Spacer(Modifier.width(7.dp))
@@ -122,7 +122,7 @@ fun TaskDetailScreen(store: DestinyStore, taskId: String, onBack: () -> Unit) {
                             )
                         }
                     }
-                    Spacer(Modifier.height(18.dp))
+                    Spacer(Modifier.height(16.dp))
                     Row {
                         StatCell(value = task.metrics.steps.toString(), label = "步")
                         Spacer(Modifier.width(26.dp))
@@ -185,11 +185,11 @@ fun TaskDetailScreen(store: DestinyStore, taskId: String, onBack: () -> Unit) {
                 Column {
                     if (task.status == "running" || task.status == "queued" || task.status == "awaiting") {
                         GhostButton("停下来", icon = Icons.Close, tone = a.danger) { store.stopTask() }
-                        Spacer(Modifier.height(9.dp))
+                        Spacer(Modifier.height(8.dp))
                     }
                     if (task.status == "stopped" || task.status == "failed") {
                         PrimaryButton("从断点继续", icon = Icons.Refresh) { store.resumeTask() }
-                        Spacer(Modifier.height(6.dp))
+                        Spacer(Modifier.height(8.dp))
                         Text(
                             "继续前会先核三件事：当前页面还是不是那个页面、输入框里有没有多东西、" +
                                 "上次那步有没有副作用。有副作用的步不会重放。",
@@ -231,14 +231,14 @@ private fun GateCard(task: Task, store: DestinyStore) {
                     color = a.warn
                 )
             }
-            Spacer(Modifier.height(7.dp))
+            Spacer(Modifier.height(8.dp))
             Text(
                 "它停在这里了 —— 不是卡住，是这一步不该由它自己决定。\n" +
                     "你点头它才往下走；红线范围内它连问都不会问。",
                 style = MaterialTheme.typography.bodySmall,
                 color = a.inkSub
             )
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(16.dp))
             Row {
                 PrimaryButton("放行这一次", modifier = Modifier.weight(1f), icon = Icons.Check) {
                     store.resolveGate("allow")
@@ -271,7 +271,7 @@ private fun StepLine(s: TaskStep) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.width(18.dp)
         ) {
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(8.dp))
             Box(
                 Modifier
                     .size(8.dp)
@@ -296,7 +296,7 @@ private fun StepLine(s: TaskStep) {
                 )
             }
             if (s.detail.isNotEmpty()) {
-                Spacer(Modifier.height(3.dp))
+                Spacer(Modifier.height(8.dp))
                 Text(
                     s.detail,
                     style = MaterialTheme.typography.labelSmall,
@@ -306,10 +306,10 @@ private fun StepLine(s: TaskStep) {
                 )
             }
             if (s.gate != null) {
-                Spacer(Modifier.height(6.dp))
+                Spacer(Modifier.height(8.dp))
                 Pill("授权闸门 · ${s.gate}", Tone.Warn)
             } else if (s.auto) {
-                Spacer(Modifier.height(6.dp))
+                Spacer(Modifier.height(8.dp))
                 Pill("已自动放行", Tone.Ok)
             }
         }

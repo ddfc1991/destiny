@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
@@ -85,6 +86,9 @@ private fun AppRoot(store: DestinyStore) {
         Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            // P0：键盘避让。没有这行，键盘弹起会直接盖住对话页的输入条，
+            // 用户看不见自己打的字 —— 这是移动端最致命的一类问题。
+            .imePadding()
     ) {
         Box(
             Modifier

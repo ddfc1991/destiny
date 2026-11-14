@@ -33,6 +33,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.destiny.agent.ui.theme.LocalAccents
@@ -78,7 +80,7 @@ fun DestinyTabBar(
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6.dp, vertical = 8.dp),
+                .padding(horizontal = 8.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -104,11 +106,11 @@ private fun TabItem(
     val a = LocalAccents.current
     val tint by animateColorAsState(
         if (selected) a.champagne else a.inkFaint,
-        tween(180), label = "tabTint"
+        tween(200), label = "tabTint"
     )
     val scale by animateFloatAsState(
         if (selected) 1f else 0.94f,
-        tween(180), label = "tabScale"
+        tween(200), label = "tabScale"
     )
     val interaction = remember { MutableInteractionSource() }
 
@@ -116,7 +118,7 @@ private fun TabItem(
         Modifier
             .width(62.dp)
             .heightIn(min = 52.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(8.dp))
             .clickable(
                 interactionSource = interaction,
                 indication = null
@@ -129,7 +131,7 @@ private fun TabItem(
             Modifier
                 .height(30.dp)
                 .width(if (selected) 46.dp else 34.dp)
-                .clip(RoundedCornerShape(15.dp))
+                .clip(RoundedCornerShape(8.dp))
                 .background(if (selected) a.champagne.copy(alpha = 0.14f) else Color.Transparent),
             contentAlignment = Alignment.Center
         ) {
@@ -149,18 +151,22 @@ private fun TabItem(
                         .size(if (badge > 9) 16.dp else 14.dp)
                         .clip(CircleShape)
                         // Hark：禁用红色角标，改用低饱和浅蓝弱提示
-                        .background(a.info),
+                        .background(a.info)
+                        // 无障碍：角标数字单独朗读，避免被图标描述吞掉
+                        .semantics { contentDescription = "$badge 项待你确认" },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         if (badge > 9) "9+" else badge.toString(),
                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp),
-                        color = MaterialTheme.colorScheme.onPrimary
+                        // 角标底是低饱和浅蓝，两种主题下都用墨色：
+                        // 深色主题下 onPrimary 本身是墨黑，会跌到 3.19:1 看不清。
+                        color = Color(0xFF0A0A0C)
                     )
                 }
             }
         }
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(8.dp))
         Text(
             tab.label,
             style = MaterialTheme.typography.labelSmall,

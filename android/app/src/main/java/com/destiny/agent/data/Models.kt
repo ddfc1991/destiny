@@ -157,8 +157,9 @@ data class AppState(
     val runtime: String = "local",        // local | cloud
     val cloudEndpoint: String = "",
     val cloudKey: String = "",
-    val cloudStatus: String = "unset",
+    val cloudStatus: String = "unset",      // unset | testing | ok | error
     val cloudHost: String = "",
+    val cloudError: String? = null,         // 探活失败的真实原因
 
     val account: Account? = null,
     val chatMsgs: List<ChatMessage> = emptyList(),

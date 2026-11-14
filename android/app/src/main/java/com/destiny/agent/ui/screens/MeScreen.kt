@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -34,10 +36,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.destiny.agent.R
 import com.destiny.agent.core.DestinyCore
 import com.destiny.agent.data.DestinyData
@@ -102,7 +109,7 @@ fun MeScreen(store: DestinyStore) {
                                 style = MaterialTheme.typography.displaySmall,
                                 color = a.ink
                             )
-                            Spacer(Modifier.height(4.dp))
+                            Spacer(Modifier.height(8.dp))
                             Text(
                                 when (acct?.method) {
                                     "google" -> "Google 账号 · 已关联"
@@ -120,7 +127,7 @@ fun MeScreen(store: DestinyStore) {
                             }
                         }
                     }
-                    Spacer(Modifier.height(18.dp))
+                    Spacer(Modifier.height(16.dp))
                     Row {
                         StatCell(value = state.memories.size.toString(), label = "条记忆")
                         Spacer(Modifier.width(28.dp))
@@ -152,7 +159,7 @@ fun MeScreen(store: DestinyStore) {
                             style = MaterialTheme.typography.headlineSmall,
                             color = a.ink
                         )
-                        Spacer(Modifier.height(2.dp))
+                        Spacer(Modifier.height(8.dp))
                         Text(
                             note,
                             style = MaterialTheme.typography.bodySmall,
@@ -197,6 +204,20 @@ fun MeScreen(store: DestinyStore) {
                         }
                     ) { store.setRuntime(it) }
 
+                    // 选了云端但没配端点 —— 直接把配置入口摆出来，别让用户自己猜
+                    if (state.runtime == "cloud") {
+                        Spacer(Modifier.height(16.dp))
+                        CloudEndpointBlock(
+                            endpoint = state.cloudEndpoint,
+                            key = state.cloudKey,
+                            status = state.cloudStatus,
+                            error = state.cloudError,
+                            onEndpoint = { store.setCloud(it, state.cloudKey) },
+                            onKey = { store.setCloud(state.cloudEndpoint, it) },
+                            onTest = { store.testCloud() }
+                        )
+                    }
+
                     Spacer(Modifier.height(16.dp))
 
                     Segmented(
@@ -219,7 +240,7 @@ fun MeScreen(store: DestinyStore) {
                                 style = MaterialTheme.typography.headlineSmall,
                                 color = a.ink
                             )
-                            Spacer(Modifier.height(2.dp))
+                            Spacer(Modifier.height(8.dp))
                             Text(
                                 "曜石香槟 · 夜里不刺眼",
                                 style = MaterialTheme.typography.bodySmall,
@@ -272,7 +293,7 @@ fun MeScreen(store: DestinyStore) {
                                     }
                                 }
                                 if (risky && !on) {
-                                    Spacer(Modifier.height(3.dp))
+                                    Spacer(Modifier.height(8.dp))
                                     Text(
                                         "金融交易类默认不放行 —— 要用请明确打开。",
                                         style = MaterialTheme.typography.labelSmall,
@@ -313,9 +334,9 @@ fun MeScreen(store: DestinyStore) {
                             onChange = { store.toggleSkill(sk.id) }
                         )
                     }
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(Modifier.height(8.dp))
                     HairLine()
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(Modifier.height(8.dp))
                     DestinyData.MCP.forEach { m ->
                         ToggleRow(
                             title = m.name,
@@ -349,7 +370,7 @@ fun MeScreen(store: DestinyStore) {
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                        Spacer(Modifier.height(3.dp))
+                        Spacer(Modifier.height(8.dp))
                         Text(
                             "${p.ms} ms · 可用率 ${p.ok} · ${p.keys} 个 Key",
                             style = MaterialTheme.typography.bodySmall,
@@ -376,13 +397,13 @@ fun MeScreen(store: DestinyStore) {
                         style = MaterialTheme.typography.headlineSmall,
                         color = a.ink
                     )
-                    Spacer(Modifier.height(5.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         "live = 这版就能用；spec = 规格已定、还没写完。点开看它到底做什么。",
                         style = MaterialTheme.typography.bodySmall,
                         color = a.inkSub
                     )
-                    Spacer(Modifier.height(14.dp))
+                    Spacer(Modifier.height(16.dp))
                     DestinyData.MIBOT_MODULES.chunked(2).forEach { row ->
                         Row(
                             Modifier.fillMaxWidth(),
@@ -402,7 +423,7 @@ fun MeScreen(store: DestinyStore) {
                             }
                             if (row.size == 1) Spacer(Modifier.weight(1f))
                         }
-                        Spacer(Modifier.height(10.dp))
+                        Spacer(Modifier.height(8.dp))
                     }
                 }
             }
@@ -419,7 +440,7 @@ fun MeScreen(store: DestinyStore) {
                         style = MaterialTheme.typography.bodyMedium,
                         color = a.inkSub
                     )
-                    Spacer(Modifier.height(12.dp))
+                    Spacer(Modifier.height(16.dp))
                     GhostButton(
                         if (showDecisions) "收起取舍矩阵" else "展开取舍矩阵",
                         icon = Icons.List,
@@ -427,7 +448,7 @@ fun MeScreen(store: DestinyStore) {
                     ) { showDecisions = !showDecisions }
 
                     if (showDecisions) {
-                        Spacer(Modifier.height(14.dp))
+                        Spacer(Modifier.height(16.dp))
                         DestinyCore.DECISIONS.forEachIndexed { i, d ->
                             DecisionRow(
                                 topic = d.topic,
@@ -438,9 +459,9 @@ fun MeScreen(store: DestinyStore) {
                                 from = d.from
                             )
                             if (i != DestinyCore.DECISIONS.lastIndex) {
-                                Spacer(Modifier.height(13.dp))
+                                Spacer(Modifier.height(16.dp))
                                 HairLine()
-                                Spacer(Modifier.height(13.dp))
+                                Spacer(Modifier.height(16.dp))
                             }
                         }
                     }
@@ -456,7 +477,7 @@ fun MeScreen(store: DestinyStore) {
                         style = MaterialTheme.typography.headlineSmall,
                         color = a.ink
                     )
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         "Destiny · 原生 Android 版（Kotlin + Jetpack Compose）。\n" +
                             "引擎逻辑自 destiny-core.js 逐节移植，UI 为原生重写，不是网页套壳。",
@@ -500,9 +521,9 @@ private fun Segmented(
         Row(
             Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(8.dp))
                 .background(a.elevated)
-                .padding(3.dp)
+                .padding(8.dp)
         ) {
             options.forEach { (key, text) ->
                 val on = key == current
@@ -510,7 +531,7 @@ private fun Segmented(
                     Modifier
                         .weight(1f)
                         .heightIn(min = 38.dp)
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(8.dp))
                         .background(if (on) a.champagne.copy(alpha = 0.16f) else Color.Transparent)
                         .clickable { onSelect(key) },
                     contentAlignment = Alignment.Center
@@ -523,7 +544,7 @@ private fun Segmented(
                 }
             }
         }
-        Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height(8.dp))
         Text(hint, style = MaterialTheme.typography.labelSmall, color = a.inkFaint)
     }
 }
@@ -544,7 +565,7 @@ private fun ToggleRow(
     ) {
         Column(Modifier.weight(1f)) {
             Text(title, style = MaterialTheme.typography.bodyLarge, color = a.ink)
-            Spacer(Modifier.height(3.dp))
+            Spacer(Modifier.height(8.dp))
             Text(
                 subtitle,
                 style = MaterialTheme.typography.labelSmall,
@@ -579,15 +600,15 @@ private fun ModuleCell(
     val a = LocalAccents.current
     Column(
         modifier
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(if (expanded) a.champagne.copy(alpha = 0.09f) else a.elevated)
             .border(
                 1.dp,
                 if (expanded) a.champagne.copy(alpha = 0.32f) else a.hairline,
-                RoundedCornerShape(14.dp)
+                RoundedCornerShape(8.dp)
             )
             .clickable(onClick = onClick)
-            .padding(13.dp)
+            .padding(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -606,7 +627,7 @@ private fun ModuleCell(
                     .background(if (impl == "live") a.ok else a.inkFaint)
             )
         }
-        Spacer(Modifier.height(5.dp))
+        Spacer(Modifier.height(8.dp))
         Text(
             note,
             style = MaterialTheme.typography.labelSmall,
@@ -615,7 +636,7 @@ private fun ModuleCell(
             overflow = TextOverflow.Ellipsis
         )
         if (expanded) {
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(8.dp))
             Pill(if (impl == "live") "已实现" else "规格已定", if (impl == "live") Tone.Ok else Tone.Neutral)
         }
     }
@@ -639,11 +660,141 @@ private fun DecisionRow(
         }
         Spacer(Modifier.height(8.dp))
         Text("取：$take", style = MaterialTheme.typography.bodySmall, color = a.ok)
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(8.dp))
         Text("舍：$drop", style = MaterialTheme.typography.bodySmall, color = a.inkFaint)
-        Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height(8.dp))
         Text("为什么：$why", style = MaterialTheme.typography.bodySmall, color = a.inkSub)
-        Spacer(Modifier.height(5.dp))
+        Spacer(Modifier.height(8.dp))
         Text("出处：$from", style = MaterialTheme.typography.labelSmall, color = a.inkFaint)
+    }
+}
+
+/* ── 云端端点配置 + 真探活 ──────────────────────────────
+   旧实现是"填了地址就显示已连接"，那是骗人的。
+   现在真的去敲一次端点，把真实结果（成功 / 超时 / 鉴权失败 / 404）如实报出来。 */
+
+@Composable
+private fun CloudEndpointBlock(
+    endpoint: String,
+    key: String,
+    status: String,
+    error: String?,
+    onEndpoint: (String) -> Unit,
+    onKey: (String) -> Unit,
+    onTest: () -> Unit
+) {
+    val a = LocalAccents.current
+    Column {
+        Text(
+            "模型端点",
+            style = MaterialTheme.typography.headlineSmall,
+            color = a.ink
+        )
+        Spacer(Modifier.height(8.dp))
+
+        EndpointField("地址", endpoint, "https://api.example.com/v1", onEndpoint)
+        Spacer(Modifier.height(8.dp))
+        EndpointField("API Key", key, "sk-…", onKey, obscure = true)
+
+        Spacer(Modifier.height(8.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier
+                    .heightIn(min = 48.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        if (status == "testing") a.elevated else a.champagne
+                    )
+                    .clickable(enabled = status != "testing" && endpoint.isNotBlank()) { onTest() }
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    if (status == "testing") "正在测…" else "测试连接",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = if (status == "testing") a.inkFaint else MaterialTheme.colorScheme.onPrimary
+                )
+            }
+
+            Spacer(Modifier.width(8.dp))
+
+            // 状态：文字 + 颜色双编码，不靠颜色单独承载
+            val (label, tint) = when (status) {
+                "testing" -> "正在连接…" to a.inkFaint
+                "ok" -> "连通了" to a.ok
+                "error" -> "连不通" to a.danger
+                else -> "还没测过" to a.inkFaint
+            }
+            Box(
+                Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(tint)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(label, style = MaterialTheme.typography.bodySmall, color = tint)
+        }
+
+        // 失败原因要说人话 —— 用户要知道是自己地址写错了还是网络不通
+        if (status == "error" && error != null) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                error,
+                style = MaterialTheme.typography.bodySmall,
+                color = a.danger
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
+        Text(
+            "这里只做连通性检查。目前拆解仍由本地规则引擎承担，接上端点不会改变任务逻辑。",
+            style = MaterialTheme.typography.labelSmall,
+            color = a.inkFaint
+        )
+    }
+}
+
+@Composable
+private fun EndpointField(
+    label: String,
+    value: String,
+    placeholder: String,
+    onChange: (String) -> Unit,
+    obscure: Boolean = false
+) {
+    val a = LocalAccents.current
+    var local by remember(value) { mutableStateOf(value) }
+    Column {
+        Text(label, style = MaterialTheme.typography.labelMedium, color = a.inkSub)
+        Spacer(Modifier.height(4.dp))
+        BasicTextField(
+            value = local,
+            onValueChange = {
+                local = it
+                onChange(it)
+            },
+            singleLine = true,
+            textStyle = LocalTextStyle.current.merge(
+                TextStyle(
+                    color = a.ink,
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp
+                )
+            ),
+            cursorBrush = SolidColor(a.champagne),
+            visualTransformation = if (obcure) PasswordVisualTransformation() else VisualTransformation.None,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(a.elevated)
+                .border(1.dp, a.hairline, RoundedCornerShape(8.dp))
+                .padding(horizontal = 16.dp, vertical = 14.dp)
+        )
+        if (value.isBlank()) {
+            Spacer(Modifier.height(4.dp))
+            Text(placeholder, style = MaterialTheme.typography.labelSmall, color = a.inkFaint)
+        }
     }
 }

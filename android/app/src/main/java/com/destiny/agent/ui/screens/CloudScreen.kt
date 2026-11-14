@@ -93,7 +93,7 @@ fun CloudScreen(store: DestinyStore) {
                         Box(
                             Modifier
                                 .size(34.dp)
-                                .clip(RoundedCornerShape(11.dp))
+                                .clip(RoundedCornerShape(8.dp))
                                 .background(a.champagne.copy(alpha = 0.14f)),
                             contentAlignment = Alignment.Center
                         ) {
@@ -111,14 +111,14 @@ fun CloudScreen(store: DestinyStore) {
                             color = a.ink
                         )
                     }
-                    Spacer(Modifier.height(11.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         "给它一件需要跨网页、跨站点的复杂事。它在一台干净的云端实例上打开浏览器，" +
                             "自己点、自己填、自己核对；遇到登录、验证码、付款，它会停下来交给你。",
                         style = MaterialTheme.typography.bodyMedium,
                         color = a.inkSub
                     )
-                    Spacer(Modifier.height(18.dp))
+                    Spacer(Modifier.height(16.dp))
                     Row {
                         StatCell(value = running.toString(), label = "正在跑", accent = running > 0)
                         Spacer(Modifier.width(28.dp))
@@ -142,15 +142,15 @@ fun CloudScreen(store: DestinyStore) {
                         style = MaterialTheme.typography.headlineSmall,
                         color = a.ink
                     )
-                    Spacer(Modifier.height(5.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         "它自己决定开哪个站点、点哪里、填什么。写清目标比写清路径准。",
                         style = MaterialTheme.typography.bodySmall,
                         color = a.inkSub
                     )
-                    Spacer(Modifier.height(13.dp))
+                    Spacer(Modifier.height(16.dp))
                     CloudGoalField(goal) { goal = it }
-                    Spacer(Modifier.height(11.dp))
+                    Spacer(Modifier.height(8.dp))
                     PrimaryButton(
                         text = "在云端电脑上开始",
                         icon = Icons.Play,
@@ -159,13 +159,13 @@ fun CloudScreen(store: DestinyStore) {
                         store.startRemote(goal.trim())
                         goal = ""
                     }
-                    Spacer(Modifier.height(10.dp))
+                    Spacer(Modifier.height(8.dp))
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(10.dp))
+                            .clip(RoundedCornerShape(8.dp))
                             .background(a.elevated)
-                            .padding(horizontal = 11.dp, vertical = 9.dp),
+                            .padding(horizontal = 8.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.Top
                     ) {
                         Icon(
@@ -218,22 +218,22 @@ fun CloudScreen(store: DestinyStore) {
                         ok = true,
                         text = "读网页、填表单、点按钮、多站点串起来核对 —— 全自动。"
                     )
-                    Spacer(Modifier.height(9.dp))
+                    Spacer(Modifier.height(8.dp))
                     BoundaryRow(
                         ok = true,
                         text = "填完之后截图留证，并把结论回到对话里。"
                     )
-                    Spacer(Modifier.height(9.dp))
+                    Spacer(Modifier.height(8.dp))
                     BoundaryRow(
                         ok = false,
                         text = "登录、验证码、人脸实名 —— 必须你亲手做，它会停下等你。"
                     )
-                    Spacer(Modifier.height(9.dp))
+                    Spacer(Modifier.height(8.dp))
                     BoundaryRow(
                         ok = false,
                         text = "付款 —— 它能走到付款页，但按下去之前一定先问你。"
                     )
-                    Spacer(Modifier.height(13.dp))
+                    Spacer(Modifier.height(16.dp))
                     Text(
                         "云端实例是干净环境，你的登录态不在里面 —— 这是设计如此，不是故障。",
                         style = MaterialTheme.typography.labelSmall,
@@ -254,10 +254,10 @@ private fun CloudGoalField(value: String, onChange: (String) -> Unit) {
         Modifier
             .fillMaxWidth()
             .heightIn(min = 74.dp)
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.surface)
-            .border(1.dp, a.hairline, RoundedCornerShape(14.dp))
-            .padding(horizontal = 13.dp, vertical = 11.dp)
+            .border(1.dp, a.hairline, RoundedCornerShape(8.dp))
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         if (value.isEmpty()) {
             Text(
@@ -304,7 +304,7 @@ private fun SessionCard(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         "云端实例 · ${stamp(session.createdAt)}",
                         style = MaterialTheme.typography.labelSmall,
@@ -328,7 +328,7 @@ private fun SessionCard(
                 )
             }
 
-            Spacer(Modifier.height(15.dp))
+            Spacer(Modifier.height(16.dp))
 
             // 步骤流水
             session.steps.forEachIndexed { i, s ->
@@ -340,14 +340,14 @@ private fun SessionCard(
             }
 
             if (session.needsHuman != null) {
-                Spacer(Modifier.height(13.dp))
+                Spacer(Modifier.height(16.dp))
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(13.dp))
+                        .clip(RoundedCornerShape(8.dp))
                         .background(a.warn.copy(alpha = 0.10f))
-                        .border(1.dp, a.warn.copy(alpha = 0.30f), RoundedCornerShape(13.dp))
-                        .padding(13.dp)
+                        .border(1.dp, a.warn.copy(alpha = 0.30f), RoundedCornerShape(8.dp))
+                        .padding(16.dp)
                 ) {
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -364,13 +364,13 @@ private fun SessionCard(
                                 color = a.warn
                             )
                         }
-                        Spacer(Modifier.height(6.dp))
+                        Spacer(Modifier.height(8.dp))
                         Text(
                             session.needsHuman,
                             style = MaterialTheme.typography.bodySmall,
                             color = a.inkSub
                         )
-                        Spacer(Modifier.height(11.dp))
+                        Spacer(Modifier.height(8.dp))
                         Row {
                             PrimaryButton(
                                 "我处理完了，交还给它",
@@ -385,13 +385,13 @@ private fun SessionCard(
             }
 
             if (session.result != null) {
-                Spacer(Modifier.height(13.dp))
+                Spacer(Modifier.height(16.dp))
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(8.dp))
                         .background(a.ok.copy(alpha = 0.09f))
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.Top
                 ) {
                     Icon(
@@ -430,7 +430,7 @@ private fun StepRow(step: ComputerStep, last: Boolean, first: Boolean) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.width(18.dp)
         ) {
-            Spacer(Modifier.height(5.dp))
+            Spacer(Modifier.height(8.dp))
             Box(
                 Modifier
                     .size(8.dp)
@@ -454,7 +454,7 @@ private fun StepRow(step: ComputerStep, last: Boolean, first: Boolean) {
                 color = if (step.state == "needs-human") a.warn else a.ink
             )
             if (step.detail.isNotEmpty()) {
-                Spacer(Modifier.height(2.dp))
+                Spacer(Modifier.height(8.dp))
                 Text(
                     step.detail,
                     style = MaterialTheme.typography.labelSmall,

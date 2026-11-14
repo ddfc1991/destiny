@@ -82,7 +82,7 @@ fun MemoryScreen(store: DestinyStore) {
                         style = MaterialTheme.typography.displaySmall,
                         color = a.ink
                     )
-                    Spacer(Modifier.height(10.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         "关于你 ${state.memories.count { it.kind == "fact" }} 条、偏好 ${state.memories.count { it.kind == "preference" }} 条、" +
                             "做法 ${state.memories.count { it.kind == "procedure" }} 条。\n" +
@@ -90,7 +90,7 @@ fun MemoryScreen(store: DestinyStore) {
                         style = MaterialTheme.typography.bodyMedium,
                         color = a.inkSub
                     )
-                    Spacer(Modifier.height(18.dp))
+                    Spacer(Modifier.height(16.dp))
                     Row {
                         StatCell(value = facts.size.toString(), label = "关于你")
                         Spacer(Modifier.width(28.dp))
@@ -115,15 +115,15 @@ fun MemoryScreen(store: DestinyStore) {
                         KindChip("偏好", kind == "preference") { kind = "preference" }
                         KindChip("做法", kind == "procedure") { kind = "procedure" }
                     }
-                    Spacer(Modifier.height(12.dp))
+                    Spacer(Modifier.height(16.dp))
                     Box(
                         Modifier
                             .fillMaxWidth()
                             .heightIn(min = 44.dp)
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(8.dp))
                             .background(MaterialTheme.colorScheme.surfaceVariant)
-                            .border(1.dp, a.hairline, RoundedCornerShape(12.dp))
-                            .padding(horizontal = 13.dp, vertical = 11.dp)
+                            .border(1.dp, a.hairline, RoundedCornerShape(8.dp))
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
                         if (input.isEmpty()) {
                             Text(
@@ -142,7 +142,7 @@ fun MemoryScreen(store: DestinyStore) {
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
-                    Spacer(Modifier.height(11.dp))
+                    Spacer(Modifier.height(8.dp))
                     PrimaryButton(
                         "记住",
                         icon = Icons.Plus,
@@ -152,7 +152,7 @@ fun MemoryScreen(store: DestinyStore) {
                         input = ""
                     }
                     if (kind == "procedure") {
-                        Spacer(Modifier.height(9.dp))
+                        Spacer(Modifier.height(8.dp))
                         Text(
                             "做法类会先进「待批准」，你点头之后才会真正生效。",
                             style = MaterialTheme.typography.bodySmall,
@@ -232,7 +232,7 @@ private fun KindChip(text: String, selected: Boolean, onClick: () -> Unit) {
                 CircleShape
             )
             .clickable(onClick = onClick)
-            .padding(horizontal = 13.dp, vertical = 7.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(
             text,
@@ -259,7 +259,7 @@ private fun MemoryCard(
                         style = MaterialTheme.typography.bodyLarge,
                         color = a.ink
                     )
-                    Spacer(Modifier.height(7.dp))
+                    Spacer(Modifier.height(8.dp))
                     Row {
                         Pill(
                             kindLabel(m.kind),
@@ -286,11 +286,11 @@ private fun MemoryCard(
                         .size(30.dp)
                         .clip(CircleShape)
                         .clickable(onClick = onDelete)
-                        .padding(6.dp)
+                        .padding(8.dp)
                 )
             }
             if (needApprove) {
-                Spacer(Modifier.height(13.dp))
+                Spacer(Modifier.height(16.dp))
                 Row {
                     PrimaryButton(
                         "同意它生效",

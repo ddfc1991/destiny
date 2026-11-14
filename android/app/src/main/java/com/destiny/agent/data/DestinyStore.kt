@@ -1,6 +1,7 @@
 package com.destiny.agent.data
 
 import android.content.Context
+import android.widget.Toast
 import com.destiny.agent.core.DestinyCore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -775,8 +776,60 @@ class DestinyStore(context: Context) {
         it.copy(cloudEndpoint = endpoint, cloudKey = key, cloudHost = endpoint, cloudStatus = "unset")
     }
 
-    fun testCloud() = update {
-        it.copy(cloudStatus = if (it.cloudEndpoint.isBlank()) "unset" else "ok")
+    /**
+     * 真连接测试：真的去敲一次端点，而不是"填了地址就算通"。
+     * 状态流转：testing → ok / error。
+     * error 里带上真实原因（DNS 失败、超时、HTTP 码、非 2xx），
+     * 让用户看到的是事实，不是安慰。
+     */
+    fun testCloud() {
+        val endpoint = _state.value.cloudEndpoint.trim()
+        if (endpoint.isBlank()) {
+            update { it.copy(cloudStatus = "unset") }
+            return
+        }
+        update { it.copy(cloudStatus = "testing") }
+        scope?.launch(Dispatchers.IO) {
+            val (ok, reason) = probeEndpoint(endpoint, _state.value.cloudKey)
+            update {
+                it.copy(
+                    cloudStatus = if (ok) "ok" else "error",
+                    cloudHost = endpoint,
+                    cloudError = if (ok) null else reason
+                )
+            }
+        }
+    }
+
+    /** 探活：GET 端点，8 秒超时。返回 (是否通, 失败原因) */
+    private fun probeEndpoint(endpoint: String, key: String): Pair<Boolean, String?> {
+        var conn: java.net.HttpURLConnection? = null
+        return try {
+            val url = java.net.URL(if (endpoint.startsWith("http")) endpoint else "https://$endpoint")
+            conn = (url.openConnection() as java.net.HttpURLConnection).apply {
+                requestMethod = "GET"
+                connectTimeout = 8000
+                readTimeout = 8000
+                instanceFollowRedirects = true
+                if (key.isNotBlank()) setRequestProperty("Authorization", "Bearer $key")
+            }
+            val code = conn.responseCode
+            when {
+                code in 200..299 -> true to null
+                code in 300..399 -> false to "端点返回重定向 $code，请填最终地址"
+                code == 401 || code == 403 -> false to "鉴权被拒（HTTP $code），检查 API Key"
+                code == 404 -> false to "端点不存在（HTTP 404），检查地址是否写全"
+                else -> false to "端点返回 HTTP $code"
+            }
+        } catch (e: java.net.UnknownHostException) {
+            false to "域名解析失败：${e.message ?: "unknown host"}"
+        } catch (e: java.net.SocketTimeoutException) {
+            false to "连接超时（8 秒无响应）"
+        } catch (e: Exception) {
+            false to "连不上：${e.javaClass.simpleName}"
+        } finally {
+            try { conn?.disconnect() } catch (e: Exception) { }
+        }
     }
 
     fun exportJson(): String = json.encodeToString(AppState.serializer(), _state.value)
@@ -789,6 +842,38 @@ class DestinyStore(context: Context) {
 
     private fun pushBot(text: String, kind: String = "reply") = update { s ->
         s.copy(chatMsgs = s.chatMsgs + ChatMessage("bot", text, System.currentTimeMillis(), kind = kind))
+    }
+
+    /* ── 轻提示 ─────────────────────────────────────────────
+       走 Toast 而不是往聊天流里塞消息：
+       临时性的系统反馈不应该污染那条连续的主链。 */
+
+    fun notify(text: String) {
+        scope?.launch(Dispatchers.Main) {
+            Toast.makeText(appContext, text, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /** 用户选了附件：只记进主链，不建任务 —— 附件本身不是一个"要办的事" */
+    fun attachFile(displayName: String) {
+        pushUser("（附件）$displayName")
+    }
+
+    /** 读取用户选中的附件：取文件名与大小，供后续任务使用 */
+    fun readPickedFile(uri: android.net.Uri): String {
+        var name = "附件"
+        var sizeKb = 0L
+        try {
+            appContext.contentResolver.query(uri, null, null, null, null)?.use { c ->
+                val idx = c.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+                if (idx >= 0 && c.moveToFirst()) name = c.getString(idx) ?: name
+                val sIdx = c.getColumnIndex(android.provider.OpenableColumns.SIZE)
+                if (sIdx >= 0 && !c.isNull(sIdx)) sizeKb = c.getLong(sIdx) / 1024
+            }
+        } catch (e: Exception) {
+            // 读不到元信息就用兜底名，不阻断主流程
+        }
+        return if (sizeKb > 0) "$name（${sizeKb}KB）" else name
     }
 
     companion object {

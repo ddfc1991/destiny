@@ -52,10 +52,17 @@
   },
 
   "motion": {
-    "durations": [260, 200, 340],
+    "durations": [260, 200, 340, 200],
     "maxTranslate": 8,
     "scaleRange": [0.98, 1.02],
     "spinner": false
+  },
+
+  "a11y": {
+    "_comment": "2026-11-14 UI 优化轮次新增：热区与对比度实测。",
+    "minTouchTargetDp": 48,
+    "keyboardAvoidance": true,
+    "semanticAggregation": true
   },
 
   "ux": {
