@@ -94,9 +94,55 @@ class DestinyStore(context: Context) {
         }
     }
 
+    /**
+     * 唯一的状态写入口。
+     *
+     * 所有写都必须发生在主线程：
+     * `tick()` 跑在 Dispatchers.Default 上，而 MutableStateFlow 的
+     * `value` setter 在非主线程写入是未定义行为 —— Compose 侧会拿到
+     * 不一致的快照，轻则重组风暴，重则 ANR（实测真机出现
+     * "Quickstep isn't responding"）。
+     *
+     * 做法：在主线程读 → 在主线程算 → 在主线程写。
+     * `block` 可能做较重的计算（引擎拆解），所以先算好再写，
+     * 避免在写锁里做长任务。
+     */
     private fun update(block: (AppState) -> AppState) {
-        _state.value = block(_state.value)
+        val next = if (isMainThread()) {
+            block(_state.value)
+        } else {
+            // 后台线程：先在主线程读快照并算出结果，再回主线程写
+            var computed: AppState? = null
+            runOnMain {
+                computed = block(_state.value)
+            }
+            computed ?: return
+        }
+        _state.value = next
         persist()
+    }
+
+    private fun isMainThread(): Boolean =
+        android.os.Looper.myLooper() == android.os.Looper.getMainLooper()
+
+    /** 把一段代码同步派发到主线程执行并等待完成。 */
+    private fun runOnMain(block: () -> Unit) {
+        if (isMainThread()) {
+            block()
+            return
+        }
+        val latch = java.util.concurrent.CountDownLatch(1)
+        scope?.launch(Dispatchers.Main) {
+            try {
+                block()
+            } finally {
+                latch.countDown()
+            }
+        } ?: latch.countDown()
+        // 主线程被占用超过 5 秒就放弃等待，避免把调用方也拖死
+        if (!latch.await(5, java.util.concurrent.TimeUnit.SECONDS)) {
+            android.util.Log.w("DestinyStore", "update 主线程派发超时，跳过本次状态写入")
+        }
     }
 
     /* ─────────────────────────── 账户 ─────────────────────────── */
@@ -314,9 +360,11 @@ class DestinyStore(context: Context) {
                 return@forEachIndexed
             }
             val f = flow[t.idx]
+            // 状态快照统一从本次 tick 开头取的 s 读，
+            // 避免与 update() 的写交叉导致读到半更新状态
             val needsGate = f.gate != null &&
-                _state.value.allowAlways.contains(f.gate).not() &&
-                !(_state.value.mode == "auto" && f.gate == "payment")
+                s.allowAlways.contains(f.gate).not() &&
+                !(s.mode == "auto" && f.gate == "payment")
 
             if (needsGate) {
                 val pol = DestinyCore.approvalDecide(
@@ -324,7 +372,7 @@ class DestinyStore(context: Context) {
                     ask = if (f.gate == "captcha") "handover" else null,
                     attendance = "Attended",
                     origin = "Ui",
-                    autonomous = _state.value.mode == "auto"
+                    autonomous = s.mode == "auto"
                 )
                 val rl = DestinyCore.redLineCheck(
                     DestinyCore.RedLineAction(text = t.text, target = t.app, amount = null)
@@ -347,8 +395,8 @@ class DestinyStore(context: Context) {
                 return@forEachIndexed
             }
 
-            val auto = (_state.value.mode == "auto" && f.gate == "payment") ||
-                _state.value.allowAlways.contains(f.gate)
+            val auto = (s.mode == "auto" && f.gate == "payment") ||
+                s.allowAlways.contains(f.gate)
             val detail = stepDetail(f.kind, t.app)
             val tk = 90 + ((t.idx + 1) * 37) % 220
             ledger.append(
@@ -387,10 +435,13 @@ class DestinyStore(context: Context) {
 
     private fun stepDetail(kind: String, app: String): String = when (kind) {
         "screen" -> "虚拟屏 vd · $app · 目标控件 EditText #1 · 逐字输入（非粘贴）"
-        "route" -> if (_state.value.runtime == "cloud" && _state.value.cloudStatus == "ok") {
-            "云端模型端点 · ${_state.value.cloudHost}（演示外壳：拆解仍由本地确定性引擎承载）"
-        } else {
-            "本地确定性引擎 · 规则路由 · 未调用模型端点"
+        "route" -> {
+            val st = _state.value
+            if (st.runtime == "cloud" && st.cloudStatus == "ok") {
+                "云端模型端点 · ${st.cloudHost}（演示外壳：拆解仍由本地确定性引擎承载）"
+            } else {
+                "本地确定性引擎 · 规则路由 · 未调用模型端点"
+            }
         }
         else -> ""
     }
@@ -566,7 +617,9 @@ class DestinyStore(context: Context) {
     /** 到点自动派活 —— 这就是「主动执行」的落点 */
     private fun fireSchedule() {
         val now = System.currentTimeMillis()
-        val due = _state.value.schedule.filter { !it.done && it.at <= now }
+        // 只在主线程读快照，避免后台线程读到正在被写的半更新状态
+        var due: List<ScheduleItem> = emptyList()
+        runOnMain { due = _state.value.schedule.filter { !it.done && it.at <= now } }
         if (due.isEmpty()) return
         due.forEach { item ->
             update { it.copy(schedule = it.schedule.map { s -> if (s.id == item.id) s.copy(done = true) else s }) }
