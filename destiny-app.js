@@ -32,6 +32,116 @@
     return hit || '其他';
   }
 
+  /* ──────────────────────────────────────────────────────────────
+     Design System v2 · 统一 SVG 图标
+     所有可见图标走 24×24 / 1.8px 线性笔画 / currentColor，
+     不再用 emoji 或 Unicode 装饰字符（跨机型渲染不一致）。
+     ────────────────────────────────────────────────────────────── */
+  const ICON = {
+    chat: '<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z"/>',
+    home: '<path d="M3 9.5 12 2l9 7.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22v-9h6v9"/>',
+    compass: '<circle cx="12" cy="12" r="10"/><path d="m15.5 8.5-2.1 5-5 2.1 2.1-5z"/>',
+    spark: '<path d="M12 2.5 14 9l6.5 2-6.5 2-2 6.5-2-6.5L3.5 11 10 9z"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 5.2a3.5 3.5 0 0 1 0 6.6"/><path d="M17.5 14.4A6.5 6.5 0 0 1 21.5 20"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+    mic: '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/>',
+    clip: '<path d="M21.4 11.1l-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/>',
+    send: '<path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/>',
+    chevL: '<path d="m15 18-6-6 6-6"/>',
+    chevR: '<path d="m9 18 6-6-6-6"/>',
+    bot: '<rect x="4" y="7" width="16" height="13" rx="3"/><path d="M12 3v4M8 13h.01M16 13h.01M9 17h6"/><circle cx="12" cy="3" r="1"/>',
+    mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/>',
+    calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+    link: '<path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.2 1.2"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.2-1.2"/>',
+    check: '<path d="m4 12 5 5L20 6"/>',
+    shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+    key: '<circle cx="7.5" cy="15.5" r="4.5"/><path d="m11 12 9-9 2 2-2 2 1.5 1.5-2.5 2.5L17.5 9.5 13 14"/>',
+    settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2H10v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1L4.2 17l.1-.1A1.7 1.7 0 0 0 3.1 15H3V9h.1a1.7 1.7 0 0 0 1.2-2.9l-.1-.1L7 3.2l.1.1A1.7 1.7 0 0 0 10 2.1V2h4v.1a1.7 1.7 0 0 0 2.9 1.2l.1-.1 2.8 2.8-.1.1A1.7 1.7 0 0 0 20.9 9h.1v6z"/>',
+    monitor: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
+    wallet: '<path d="M20 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5"/><path d="M16 13h3"/>',
+    box: '<path d="m12 2 9 5-9 5-9-5z"/><path d="M3 7v10l9 5 9-5V7M12 12v10"/>',
+    grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+    phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>',
+    cloud: '<path d="M17.5 19a4.5 4.5 0 0 0 .5-9 6 6 0 0 0-11.6 1.5A3.5 3.5 0 0 0 6.5 19z"/>',
+    logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>',
+    book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    play: '<circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4z"/>',
+    bolt: '<path d="M13 2 3 14h9l-1 8 10-12h-9z"/>',
+    database: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/>',
+    chart: '<path d="M3 3v18h18"/><path d="m7 15 4-5 3 3 5-7"/>',
+    route: '<circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h5a4 4 0 0 0 0-8h-2a4 4 0 0 1 0-8h5"/>',
+    layers: '<path d="m12 2 9 5-9 5-9-5z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/>',
+    refresh: '<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
+    lock: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+    eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+    bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M10 21h4"/>',
+    file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+    download: '<path d="M12 3v12M7 11l5 5 5-5M4 21h16"/>',
+    info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+    list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+    activity: '<path d="M3 12h4l3-8 4 16 3-8h4"/>',
+    plug: '<path d="M9 2v6M15 2v6M6 8h12v3a6 6 0 0 1-12 0zM12 17v5"/>',
+    palette: '<path d="M12 3a9 9 0 0 0 0 18h1.5a2 2 0 0 0 0-4H12a2 2 0 0 1 0-4h6a3 3 0 0 0 3-3 9 9 0 0 0-9-7z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="9" r="1"/>',
+    scan: '<path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3M3 12h18"/>',
+    fingerprint: '<path d="M12 10a2 2 0 0 1 2 2c0 4-.5 6-1 8M8 12a4 4 0 0 1 1-3M16 12a4 4 0 0 0-1-3M5 12a7 7 0 0 1 2-5M19 12a7 7 0 0 0-2-5"/>',
+    sync: '<path d="M4 8h13l-3-3M20 16H7l3 3"/>',
+    inbox: '<path d="M3 12h5l2 3h4l2-3h5"/><path d="M5 5h14l2 7v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7z"/>'
+  };
+  function ico(n) {
+    return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (ICON[n] || ICON.grid) + '</svg>';
+  }
+  /* 行图标按功能语义选择，不再由调用方随机指定装饰色 */
+  const ICON_RULES = [
+    [/账户|登录|身份|我的|退出/, 'user'],
+    [/连接服务|同步|服务商/, 'sync'],
+    [/运行模式|云端|网关|端点/, 'cloud'],
+    [/询问|自主|偏好/, 'settings'],
+    [/闸门|红线|授权|审批|付款|钱包|风险/, 'shield'],
+    [/虚拟屏|避让|排队|槽位|屏幕/, 'monitor'],
+    [/恢复|修复|自检|诊断|督查|检阅/, 'activity'],
+    [/外观|主题|字体|显示/, 'palette'],
+    [/数据|导出|备份|下载/, 'download'],
+    [/决策|取舍|融合|图谱/, 'layers'],
+    [/密钥|凭证|隔离|保险库/, 'key'],
+    [/MCP|插件|扩展/, 'plug'],
+    [/条件|定时|计划|提醒|日程/, 'clock'],
+    [/监控|用量|统计|Token/, 'chart'],
+    [/关于|规格|说明|运行模式说明/, 'info'],
+    [/模块|能力|路由/, 'route'],
+    [/邮件|消息|收件/, 'mail'],
+    [/群聊|群组|多人/, 'users'],
+    [/机器人/, 'bot'],
+    [/沙箱|容器/, 'box'],
+    [/记忆|知识|资料/, 'database'],
+    [/想法|灵感/, 'spark'],
+    [/动态|关注/, 'compass'],
+    [/公众号|文章|阅读|朗读/, 'book'],
+    [/日历|日期/, 'calendar'],
+    [/会话|任务|清单/, 'list'],
+    [/会话列表|聊天/, 'chat']
+  ];
+  function pickIcon(label) {
+    const L = String(label || '');
+    for (let i = 0; i < ICON_RULES.length; i++) if (ICON_RULES[i][0].test(L)) return ICON_RULES[i][1];
+    return 'grid';
+  }
+  function pickTone(label) {
+    const L = String(label || '');
+    if (/红线|拒绝|危险|注销|退出登录/.test(L)) return 'tone-err';
+    if (/闸门|授权|付款|钱包|待决定|风险/.test(L)) return 'tone-warn';
+    if (/完成|通过|已连接|在线|就绪/.test(L)) return 'tone-ok';
+    return '';
+  }
+  const TAB_ICON = { chat: 'chat', home: 'home', feed: 'compass', ideas: 'spark', me: 'user' };
+  const CAP_ICON = {
+    '手机操控': 'phone', '微信': 'chat', 'App 访问': 'grid', '钱包': 'wallet',
+    '沙箱': 'box', '监控': 'chart', '密钥库': 'key', '设置': 'settings'
+  };
+  function capTone(n) { return n === '钱包' ? 'tone-warn' : (n === '沙箱' ? 'tone-ok' : ''); }
+
   /* ────────────────────────── 状态 ────────────────────────── */
   function DEFAULT() {
     return {
@@ -242,16 +352,17 @@
   /* ────────────────────── 渲染辅助（mibot 类名） ────────────────────── */
   function backBar(title) {
     return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">' +
-      '<button class="btn sm ghost" data-act="back">‹ 返回</button>' +
+      '<button class="btn sm ghost" data-act="back">' + ico('chevL') + ' 返回</button>' +
       '<span style="font-size:11px;color:var(--ink-sub);letter-spacing:.5px;text-transform:uppercase">' + esc(title) + '</span></div>';
   }
   function section(t, n) { return '<div class="section-title">' + esc(t) + (n != null ? ' <span class="mono" style="color:var(--ink-faint)">' + n + '</span>' : '') + '</div>'; }
   function rowsHtml(list) { return list.join(''); }
   function row(label, sub, val, act, extra, glyph, color) {
-    const ic = glyph ? '<div class="ic" style="background:var(--' + (color || 'accent') + ')">' + glyph + '</div>' : '';
+    const ic = glyph ? '<div class="ic ' + pickTone(label) + '">' + ico(pickIcon(label)) + '</div>' : '';
     return '<div class="row ' + (act ? 'tap' : '') + '" ' + (act ? 'data-act="' + act + '" ' + (extra || '') : '') + '>' + ic +
       '<div class="lab"><b>' + label + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</div>' +
-      (val != null ? '<span class="val">' + val + '</span>' : '') + (act ? '<span class="chev">›</span>' : '') + '</div>';
+      (val != null ? '<span class="val">' + val + '</span>' : '') +
+      (act ? '<span class="chev">' + ico('chevR') + '</span>' : '') + '</div>';
   }
   function sw(on) { return '<span class="dot ' + (on ? 'ok' : 'idle') + '" style="width:10px;height:10px"></span>'; }
   function stLabel(s) { return { running: '执行中', awaiting: '等你决定', queued: '排队中', paused: '已暂停', done: '已完成', stopped: '已停止', failed: '失败' }[s] || s; }
@@ -269,13 +380,13 @@
   /* ── Toki 式登录（参考 toki.com：Google / 邮箱 / 手机号，同一账户跨端同步） ── */
   function pageLogin() {
     let h = '<div class="login-wrap">';
-    h += '<div class="login-logo">◈</div><div class="login-ttl">Destiny</div>';
+    h += '<div class="login-logo">' + ico('spark') + '</div><div class="login-ttl">Destiny</div>';
     h += '<div class="login-sub">说一句话，剩下的我来办。日程、任务、提醒，像发消息一样简单。</div>';
     if (!state.loginStep) {
       h += '<div class="login-methods">';
       h += '<button class="btn login-btn" data-act="login-go" data-v="google"><span class="lg g">G</span>用 Google 账号继续</button>';
-      h += '<button class="btn login-btn" data-act="login-go" data-v="email"><span class="lg e">✉</span>用邮箱继续</button>';
-      h += '<button class="btn login-btn" data-act="login-go" data-v="phone"><span class="lg p">☎</span>用手机号继续</button>';
+      h += '<button class="btn login-btn" data-act="login-go" data-v="email"><span class="lg e">' + ico('mail') + '</span>用邮箱继续</button>';
+      h += '<button class="btn login-btn" data-act="login-go" data-v="phone"><span class="lg p">' + ico('phone') + '</span>用手机号继续</button>';
       h += '</div>';
       h += '<div class="hint" style="text-align:center;margin-top:18px">演示外壳 · 账户只存本机，不联网不上传。真机版接真实 OAuth / 短信验证。</div>';
     } else {
@@ -306,7 +417,7 @@
     const running = state.tasks.filter(function (t) { return ['running', 'awaiting', 'paused', 'queued'].indexOf(t.status) >= 0; });
     const p = pendingCount(); const doneToday = state.tasks.filter(function (t) { return t.status === 'done'; }).length;
     let h = '';
-    h += '<div class="card"><div class="hero-greet">' + greeting() + ' 👋</div>';
+    h += '<div class="card hero"><div class="hero-greet">' + greeting() + ' 👋</div>';
     h += '<div class="hero-status">' + esc(statusLine()) + '</div></div>';
 
     if (running.length) {
@@ -314,7 +425,7 @@
       running.slice(0, 3).forEach(function (t) {
         const now = t.status === 'running' && t.steps.length ? t.steps[t.steps.length - 1].title : stLabel(t.status);
         h += '<div class="it tap" data-act="open-task" data-id="' + t.id + '">' +
-          '<div class="av" style="background:var(--' + (t.status === 'awaiting' ? 'amber' : 'blue') + ')">' + esc((t.app || '?')[0]) + '</div>' +
+          '<div class="av">' + esc((t.app || '?')[0]) + '</div>' +
           '<div class="rt"><b>' + esc(t.text) + '</b><small>' + esc(now) + (t.steps.length ? ' · 第 ' + t.steps.length + ' 步' : '') + '</small></div>' +
           '<span class="t mono">' + stLabel(t.status) + '</span></div>';
       });
@@ -327,26 +438,25 @@
     else {
       h += '<div class="recent">';
       recents.forEach(function (t) {
-        const col = ['blue', 'green', 'purple', 'amber', 'slate', 'sky', 'brick', 'teal'][t.app.length % 8];
-        h += '<div class="it" data-act="open-task" data-id="' + t.id + '">' +
-          '<div class="av" style="background:var(--' + col + ')">' + esc((t.app || '?')[0]) + '</div>' +
+        h += '<div class="it tap" data-act="open-task" data-id="' + t.id + '">' +
+          '<div class="av">' + esc((t.app || '?')[0]) + '</div>' +
           '<div class="rt"><b>' + esc(t.text) + '</b><small>' + esc(t.app) + ' · ' + stLabel(t.status) + '</small></div>' +
           '<span class="t mono">' + rel(t.createdAt) + '</span></div>';
       });
       h += '</div>';
     }
-    h += '<div class="btnrow" style="margin-top:12px"><button class="btn primary sm" data-act="sheet" data-mode="new-task">＋ 新会话</button>' +
+    h += '<div class="btnrow" style="margin-top:12px"><button class="btn primary sm" data-act="sheet" data-mode="new-task">' + ico('plus') + ' 新会话</button>' +
       (p ? '<button class="btn sm" data-act="go" data-page="gates">授权闸门 · ' + p + '</button>' : '<button class="btn sm" data-act="go" data-page="screens">虚拟屏</button>') + '</div></div>';
 
     h += '<div class="section-title">能力</div>';
     h += '<div class="card"><div class="cap-grid">';
     D.CAP_GRID.forEach(function (c) {
-      h += '<div class="cap" data-act="cap" data-to="' + c.to + '"><div class="c" style="background:var(--' + c.c + ')">' + c.g + '</div>' +
+      h += '<div class="cap" data-act="cap" data-to="' + c.to + '"><div class="c ' + capTone(c.n) + '">' + ico(CAP_ICON[c.n] || 'grid') + '</div>' +
         '<b>' + esc(c.n) + '</b><small>' + esc(c.s) + '</small></div>';
     });
     h += '</div></div>';
 
-    if (p) h += '<div class="notice warn" data-act="go" data-page="gates">⛔ 授权闸门 · ' + p + ' 项待决定　<span style="opacity:.8">去处理 ›</span></div>';
+    if (p) h += '<div class="notice warn" data-act="go" data-page="gates">' + ico('shield') + ' 授权闸门 · ' + p + ' 项待决定　<span style="opacity:.8">去处理 ›</span></div>';
     h += '<div class="notice info">Destiny 以 <b>mibot</b> 为主干：会话、动态、想法、邮件、群聊、机器人、插件、沙箱、密钥库、虚拟屏、网关都是 mibot 真实模块；Mika 挑走的 9 块与融合增强（授权闸门 / 能力路由 / 自检 / 定时）挂在对应模块下。执行引擎为本地确定性引擎，需真机 / 模型端点的能力已标注。</div>';
     return h;
   }
@@ -363,38 +473,47 @@
   function pageChat() {
     let h = '<div class="chat-stream">';
     if (!state.chatMsgs.length) {
-      h += '<div class="empty"><div class="e-ic">✉</div><b>像发消息一样派事</b><small>说一句目的，Destiny 拆步骤、建任务，该问的会停下来问你。<br>也可以把公众号文章链接直接发进来。</small></div>';
+      h += '<div class="empty"><div class="e-ic">' + ico('chat') + '</div><b>像发消息一样派事</b><small>说一句目的，Destiny 拆步骤、建任务，该问的会停下来问你。<br>也可以把公众号文章链接直接发进来。</small></div>';
     }
     let lastDay = '';
     state.chatMsgs.forEach(function (m) {
       const day = dayLabel(m.t);
       if (day !== lastDay) { h += '<div class="day-sep"><span>' + day + '</span></div>'; lastDay = day; }
-      const time = '<div class="mt mono">' + hhmm(m.t) + '</div>';
+      const tin = '<span class="mt in mono">' + hhmm(m.t) + '</span>';
       if (m.role === 'user') {
-        h += '<div class="msg me"><div class="bub">' + esc(m.text) + '</div>' + time + '</div>';
+        h += '<div class="msg me"><div class="bub">' + esc(m.text) + tin + '</div></div>';
       } else {
         const go2 = m.link ? ' link tap" data-act="open-task" data-id="' + m.link + '"' : (m.page ? ' link tap" data-act="go" data-page="' + m.page + '"' : '');
-        h += '<div class="msg bot"><div class="av" style="background:var(--accent)">◈</div><div class="bub' + go2 + '>' + esc(m.text) + '</div>' + time + '</div>';
+        const cta = (m.link || m.page)
+          ? '<span class="bub-go">' + (m.link ? '查看执行过程' : '打开公众号阅读') + ico('chevR') + '</span>' : '';
+        h += '<div class="msg bot"><div class="av">' + ico('bot') + '</div><div class="bub' + go2 + '">' + esc(m.text) + cta + tin + '</div></div>';
       }
     });
-    // 实时执行指示（Toki 式：Agent 正在做事的呼吸感）
+    // 实时执行指示：独立状态卡（虚线 + Agent 色），不再混同普通回复气泡
     const act = state.tasks.filter(function (t) { return ['running', 'queued', 'awaiting', 'paused'].indexOf(t.status) >= 0; });
     if (act.length) {
       const t0 = act[0];
       const now = t0.status === 'running' && t0.steps.length ? '正在执行 · ' + t0.steps[t0.steps.length - 1].title
         : t0.status === 'awaiting' ? '停在授权闸门 · 等你决定'
           : t0.status === 'queued' ? '排队中 · ' + (t0.waitingFor ? '在等 ' + t0.waitingFor : '等空闲虚拟屏') : '已暂停';
-      h += '<div class="msg bot"><div class="av" style="background:var(--accent)">◈</div><div class="bub typing-bub"><span class="tdots"><i></i><i></i><i></i></span>' + esc(now) + (act.length > 1 ? '（还有 ' + (act.length - 1) + ' 个在等）' : '') + '</div></div>';
+      h += '<div class="msg bot"><div class="av">' + ico('bot') + '</div><div class="bub live"><div class="typing-bub">' +
+        '<span class="live-tag">进行中</span><span class="tdots"><i></i><i></i><i></i></span>' + esc(now) +
+        (act.length > 1 ? '（还有 ' + (act.length - 1) + ' 个在等）' : '') + '</div></div></div>';
     }
     h += '</div>';
     h += '<div class="chips chat-chips">' + ['明天下午3点提醒我开会', '每周一9点汇总周报', '帮我在闲鱼回复买家'].map(function (c) {
       return '<button class="chip" data-act="chat-chip" data-v="' + esc(c) + '">' + esc(c) + '</button>';
     }).join('') + '</div>';
-    h += '<div class="composer"><button class="cbtn" data-act="chat-voice" title="语音输入">🎤</button>' +
-      '<input class="inp" id="chatInput" placeholder="说一句要办的事，或贴公众号文章链接…">' +
-      '<button class="cbtn" data-act="chat-attach" title="附件 / 图片">📎</button>' +
-      '<button class="cbtn send" data-act="chat-send" title="发送">➤</button></div>';
     return h;
+  }
+
+  /* 输入条独立渲染到 dock（滚动容器之外）：常驻、不遮挡内容、重建 view 时不清空草稿 */
+  function composerHtml() {
+    return '<div class="composer">' +
+      '<button class="cbtn" data-act="chat-voice" title="语音输入" aria-label="语音输入">' + ico('mic') + '</button>' +
+      '<input class="inp" id="chatInput" placeholder="说一句要办的事，或贴公众号文章链接…" aria-label="输入任务或公众号链接">' +
+      '<button class="cbtn" data-act="chat-attach" title="附件 / 图片" aria-label="添加附件">' + ico('clip') + '</button>' +
+      '<button class="cbtn send" data-act="chat-send" title="发送" aria-label="发送">' + ico('send') + '</button></div>';
   }
 
   function pageFeed() {
@@ -420,7 +539,7 @@
     h += '<div class="card"><textarea class="inp" id="ideaInput" placeholder="随手记一个想法…"></textarea>' +
       '<div class="btnrow" style="margin-top:8px"><button class="btn primary sm" data-act="add-idea">记下来</button>' +
       '<button class="btn sm" data-act="go" data-page="feed">并进动态</button></div></div>';
-    if (!state.ideas.length) h += '<div class="empty"><div class="e-ic">✦</div><b>还没有想法</b><small>记下来，会自动并进动态的第二态。</small></div>';
+    if (!state.ideas.length) h += '<div class="empty"><div class="e-ic">' + ico('spark') + '</div><b>还没有想法</b><small>记下来，会自动并进动态的第二态。</small></div>';
     else {
       h += '<div class="card">';
       state.ideas.forEach(function (it, i) {
@@ -437,8 +556,8 @@
   function pageMe() {
     const p = pendingCount();
     const acc = state.account || { name: 'Destiny', id: '', method: '' };
-    let h = '<div class="card tap" data-act="go" data-page="account"><div style="display:flex;align-items:center;gap:10px">' +
-      '<div class="av" style="width:46px;height:46px;border-radius:14px;background:var(--accent);font-size:20px">' + esc((acc.name || 'D')[0]) + '</div>' +
+    let h = '<div class="card hero tap" data-act="go" data-page="account"><div style="display:flex;align-items:center;gap:12px">' +
+      '<div class="av av-lg">' + esc((acc.name || 'D')[0]) + '</div>' +
       '<div style="flex:1"><div style="font-weight:600;font-size:17px">' + esc(acc.name) + '</div>' +
       '<div class="hint" style="margin:2px 0 0">' + esc(acc.id || '端侧 Agent') + '</div></div>' +
       (acc.method ? '<span class="tag ' + (acc.method === 'google' ? 'from-mika' : 'from-c') + '">' + (acc.method === 'google' ? 'Google' : acc.method === 'phone' ? '手机号' : '邮箱') + '</span>' : '') +
@@ -468,9 +587,9 @@
     D.MIBOT_MODULES.forEach(function (m) {
       const srcTag = '<span class="tag ' + (m.src === 'mibot' ? 'from-mibot' : 'from-c') + '">' + (m.src === 'mibot' ? 'mibot' : '融合') + '</span>';
       const implTag = '<span class="tag" style="background:var(--chip-bg);color:var(--ink-sub)">' + (m.impl === 'live' ? '可用' : '规格') + '</span>';
-      h += '<div class="row tap" data-act="go" data-page="' + m.to + '"><div class="ic" style="background:var(--' + m.c + ')">' + m.g + '</div>' +
+      h += '<div class="row tap" data-act="go" data-page="' + m.to + '"><div class="ic ' + pickTone(m.n) + '">' + ico(pickIcon(m.n)) + '</div>' +
         '<div class="lab"><b>' + esc(m.n) + '</b><small>' + esc(m.note) + '</small></div>' +
-        '<span style="display:flex;gap:4px;margin-right:6px">' + srcTag + implTag + '</span><span class="chev">›</span></div>';
+        '<span style="display:flex;gap:4px;margin-right:6px">' + srcTag + implTag + '</span><span class="chev">' + ico('chevR') + '</span></div>';
     });
 
     h += section('融合增强（代码级择优）');
@@ -510,7 +629,7 @@
       '<div style="font-size:15px;font-weight:600;margin-top:9px;line-height:1.45">' + esc(t.text) + '</div>' +
       '<div class="hint">虚拟屏 vd-' + (t.vd == null ? '?' : t.vd + 1) + ' · ' + esc(t.app) + ' · ' + hhmmss(t.createdAt) + ' 创建</div></div>';
     if (t.status === 'awaiting') {
-      h += '<div class="notice risk"><div style="font-weight:600;margin-bottom:5px">⛔ 授权闸门 · ' + esc(gateLabel(t.gate)) + '</div>' +
+      h += '<div class="notice risk"><div style="font-weight:600;margin-bottom:5px">' + ico('shield') + ' 授权闸门 · ' + esc(gateLabel(t.gate)) + '</div>' +
         '<div style="font-size:var(--fs-sec-line)">这一步真实停住了，在你决定前不会往下走。' +
         (t.gate === 'captcha' ? '验证码、人脸、实名两类模式都问；滑块不进可授权列表。' :
           t.gate === 'payment' ? (state.mode === 'ask' ? '当前「询问」模式：花钱才问，发消息 / 提交 / 删除直接做。' : '当前「自主」模式仍会在此留一条授权记录。') : '') + '</div>' +
@@ -635,18 +754,18 @@
     h += section('技能 · 库存', D.SKILLS.length);
     D.SKILLS.forEach(function (s) {
       const on = state.skills[s.id] !== false ? s.on : false;
-      h += '<div class="row tap" data-act="toggle-skill" data-id="' + s.id + '"><div class="ic" style="background:var(--green)">❖</div>' +
+      h += '<div class="row tap" data-act="toggle-skill" data-id="' + s.id + '"><div class="ic">' + ico('spark') + '</div>' +
         '<div class="lab"><b>' + esc(s.name) + '</b><small>' + esc(s.when) + ' · 不该用：' + esc(s.not) + '</small></div>' + sw(on) + '</div>';
     });
     h += section('MCP 服务 · 默认全关，用到才开', D.MCP.length);
     D.MCP.forEach(function (m) {
       const on = state.mcp[m.id] !== undefined ? state.mcp[m.id] : m.on;
-      h += '<div class="row tap" data-act="toggle-mcp" data-id="' + m.id + '"><div class="ic" style="background:var(--purple)">⧓</div>' +
+      h += '<div class="row tap" data-act="toggle-mcp" data-id="' + m.id + '"><div class="ic">' + ico('plug') + '</div>' +
         '<div class="lab"><b>' + esc(m.name) + ' <span class="tag" style="background:var(--chip-bg);color:var(--ink-sub)">' + esc(m.type) + '</span></b><small>' + m.tools + ' 个工具 · ' + esc(m.perm) + '</small></div>' + sw(on) + '</div>';
     });
     h += section('App / 站点知识库', '24 App + 23 站点');
     D.APP_KNOWLEDGE.slice(0, 5).forEach(function (k) {
-      h += '<div class="row"><div class="ic" style="background:var(--blue)">▦</div><div class="lab"><b>' + esc(k.n) + ' <span class="tag" style="background:var(--chip-bg);color:var(--ink-sub)">' + esc(k.k) + '</span></b><small>' + esc(k.hint) + '</small></div></div>';
+      h += '<div class="row"><div class="ic">' + ico('grid') + '</div><div class="lab"><b>' + esc(k.n) + ' <span class="tag" style="background:var(--chip-bg);color:var(--ink-sub)">' + esc(k.k) + '</span></b><small>' + esc(k.hint) + '</small></div></div>';
     });
     h += '<div class="btnrow"><button class="btn sm" data-act="go" data-page="knowledge">看全部</button></div>';
     h += '<div class="hint">13 技能 = 库存 / 26 操作路线 = 地图 / 46 能力路由 = 调度。库存和地图都不会自己动，动的是调度。</div>';
@@ -698,7 +817,7 @@
     h += '<div class="notice">清单里展示 10 条代表项；完整规格为 24 个 App + 23 个站点，纯 Markdown 可补充，不写代码就能让它变强。</div>';
     h += section('清单', D.APP_KNOWLEDGE.length);
     D.APP_KNOWLEDGE.forEach(function (k) {
-      h += '<div class="row"><div class="ic" style="background:var(--blue)">▦</div><div class="lab"><b>' + esc(k.n) + ' <span class="tag" style="background:var(--chip-bg);color:var(--ink-sub)">' + esc(k.k) + '</span></b><small>' + esc(k.hint) + '</small></div></div>';
+      h += '<div class="row"><div class="ic">' + ico('grid') + '</div><div class="lab"><b>' + esc(k.n) + ' <span class="tag" style="background:var(--chip-bg);color:var(--ink-sub)">' + esc(k.k) + '</span></b><small>' + esc(k.hint) + '</small></div></div>';
     });
     return h;
   }
@@ -760,7 +879,7 @@
     h += section('App 放行', APPS.length);
     APPS.forEach(function (a) {
       const on = state.appAccess[a] === true; const fin = FINANCIAL.indexOf(a) >= 0;
-      h += '<div class="row tap" data-act="toggle-app" data-app="' + esc(a) + '"><div class="ic" style="background:var(--' + (fin ? 'amber' : 'blue') + ')">' + (fin ? '¤' : '▣') + '</div>' +
+      h += '<div class="row tap" data-act="toggle-app" data-app="' + esc(a) + '"><div class="ic ' + (fin ? 'tone-warn' : '') + '">' + ico(fin ? 'wallet' : 'grid') + '</div>' +
         '<div class="lab"><b>' + esc(a) + '</b><small>' + (fin ? '金融交易类 · 推荐禁用' : '普通应用') + '</small></div>' + sw(on) + '</div>';
     });
     return h;
@@ -771,7 +890,7 @@
     h += '<div class="notice ok">127.0.0.1:4000 · 跑在这台机器上 · <b>Key 不出门</b>。台账管登录态，网关管 API Key，两者分开。</div>';
     h += section('供应商实时判定', D.PROVIDERS.length);
     D.PROVIDERS.forEach(function (p) {
-      h += '<div class="row"><div class="ic" style="background:var(--' + (p.state === 'ok' ? 'green' : 'err') + ')">◈</div>' +
+      h += '<div class="row"><div class="ic ' + (p.state === 'ok' ? 'tone-ok' : 'tone-err') + '">' + ico('activity') + '</div>' +
         '<div class="lab"><b>' + esc(p.n) + '</b><small class="mono">' + p.ms + 'ms · 成功率 ' + p.ok + ' · ' + p.keys + ' Key</small></div>' +
         '<span class="val">' + (p.state === 'ok' ? '能用' : '已切走') + '</span></div>';
     });
@@ -835,7 +954,7 @@
     D.SELF_CHECK.forEach(function (c, i) {
       let v = '待测', dot = 'idle';
       if (r) { if (c.device) { v = '需真机'; dot = 'wait'; } else { v = r[i] ? '通过' : '未通过'; dot = r[i] ? 'ok' : 'risk'; } }
-      h += '<div class="row"><div class="ic" style="background:var(--' + (dot === 'ok' ? 'green' : dot === 'risk' ? 'err' : 'steel') + ')">✜</div>' +
+      h += '<div class="row"><div class="ic ' + (dot === 'ok' ? 'tone-ok' : dot === 'risk' ? 'tone-err' : '') + '">' + ico('scan') + '</div>' +
         '<div class="lab"><b>' + esc(c.n) + '</b><small>' + (c.device ? '浏览器判定不了，如实标注' : '本应用内可真实检查') + '</small></div>' +
         '<span class="val mono">' + v + '</span></div>';
     });
@@ -921,7 +1040,7 @@
     h += '<div class="notice warn">mibot 真实只有 <span class="mono">VaultModel.kt:91</span> 一个 identity:String?。这里补了完整三层：身份 → 组 → 会话；一个号被风控，同组先停 24h。</div>';
     h += section('示例：组 → 会话', D.VAULT.length);
     D.VAULT.forEach(function (v) {
-      h += '<div class="row"><div class="ic" style="background:var(--navy)">⚿</div>' +
+      h += '<div class="row"><div class="ic">' + ico('key') + '</div>' +
         '<div class="lab"><b>' + esc(v.idt) + '</b><small>组 ' + esc(v.grp) + ' · Key ' + esc(v.key) + '</small></div>' +
         '<span class="val">' + (v.risk === '禁用' ? '<span class="tag from-mibot">禁用</span>' : v.cool !== '—' ? '<span class="tag" style="background:var(--chip-bg);color:var(--ink-sub)">降 ' + v.cool + '</span>' : '<span class="tag from-c">正常</span>') + '</span></div>';
     });
@@ -935,7 +1054,7 @@
     h += section('MCP 服务', D.MCP.length);
     D.MCP.forEach(function (m) {
       const on = state.mcp[m.id] !== undefined ? state.mcp[m.id] : m.on;
-      h += '<div class="row"><div class="ic" style="background:var(--purple)">⧓</div>' +
+      h += '<div class="row"><div class="ic">' + ico('plug') + '</div>' +
         '<div class="lab"><b>' + esc(m.name) + '</b><small>' + m.tools + ' 工具 · ' + esc(m.perm) + '</small></div>' +
         '<span class="val">' + (on ? '开' : '关') + '</span></div>';
     });
@@ -997,7 +1116,7 @@
     h += '<div class="notice warn">mibot 真实模块：只共享「一句话的事实」，不共享过程；过程进各自会话，不上黑板。你亲手写的优先级最高。</div>';
     h += section('群聊', D.GROUPS.length);
     D.GROUPS.forEach(function (g) {
-      h += '<div class="row"><div class="ic" style="background:var(--rose)">⌘</div>' +
+      h += '<div class="row"><div class="ic">' + ico('users') + '</div>' +
         '<div class="lab"><b>' + esc(g.n) + '</b><small>' + g.members + ' 人 · ' + esc(g.last) + '</small></div>' +
         '<span class="val mono">' + esc(g.time) + '</span></div>';
     });
@@ -1008,7 +1127,7 @@
     h += '<div class="notice">mibot 真实模块：自托管 Bots 的创建与编排。</div>';
     h += section('我的 Bots', D.BOTS.length);
     D.BOTS.forEach(function (b) {
-      h += '<div class="row"><div class="ic" style="background:var(--navy)">⚇</div>' +
+      h += '<div class="row"><div class="ic">' + ico('bot') + '</div>' +
         '<div class="lab"><b>' + esc(b.n) + '</b><small>' + esc(b.role) + ' · ' + esc(b.note) + '</small></div>' + sw(b.on) + '</div>';
     });
     return h;
@@ -1019,7 +1138,7 @@
     h += section('插件', D.PLUGINS.length);
     D.PLUGINS.forEach(function (p) {
       const stepTag = p.state === '已装' ? '<span class="tag from-c">已装</span>' : p.step === 2 ? '<span class="tag from-mibot">缺运行时</span>' : '<span class="tag" style="background:var(--chip-bg);color:var(--ink-sub)">' + esc(p.state) + '</span>';
-      h += '<div class="row"><div class="ic" style="background:var(--brick)">⧉</div>' +
+      h += '<div class="row"><div class="ic">' + ico('box') + '</div>' +
         '<div class="lab"><b>' + esc(p.n) + ' <span class="tag" style="background:var(--chip-bg);color:var(--ink-sub)">' + esc(p.cat) + '</span></b><small>v' + p.ver + ' · 步骤 ' + p.step + '/3</small></div>' +
         '<span class="val">' + stepTag + '</span></div>';
     });
@@ -1041,7 +1160,7 @@
     h += '<div class="notice warn">mibot 真实模块（规格）：身份 → 组 → 会话三层隔离；台账管登录态，网关管 API Key，两者分开。一个号被风控，同组先停 24h。</div>';
     h += section('身份', D.VAULT.length);
     D.VAULT.forEach(function (v) {
-      h += '<div class="card tight"><div style="display:flex;align-items:center;gap:8px"><div class="ic" style="background:var(--navy)">⚿</div><b style="flex:1;font-weight:500">' + esc(v.idt) + '</b>' +
+      h += '<div class="card tight"><div style="display:flex;align-items:center;gap:8px"><div class="ic">' + ico('key') + '</div><b style="flex:1;font-weight:500">' + esc(v.idt) + '</b>' +
         (v.risk === '禁用' ? '<span class="tag from-mibot">禁用</span>' : v.cool !== '—' ? '<span class="tag" style="background:var(--chip-bg);color:var(--ink-sub)">降 ' + v.cool + '</span>' : '<span class="tag from-c">正常</span>') + '</div>' +
         '<div class="hint" style="margin:6px 0 0">组 ' + esc(v.grp) + ' · Key ' + esc(v.key) + '</div></div>';
     });
@@ -1052,7 +1171,7 @@
     h += '<div class="notice ok">模型供应商预设与自动切换。本地网关优先，连错 3 次 / 延迟 > 3s 立刻切。</div>';
     h += section('预设', D.PROVIDERS_PRESET.length);
     D.PROVIDERS_PRESET.forEach(function (p) {
-      h += '<div class="row tap" data-act="toggle-provider" data-n="' + esc(p.n) + '"><div class="ic" style="background:var(--' + (p.on ? 'green' : 'steel') + ')">◈</div>' +
+      h += '<div class="row tap" data-act="toggle-provider" data-n="' + esc(p.n) + '"><div class="ic ' + (p.on ? 'tone-ok' : '') + '">' + ico('cloud') + '</div>' +
         '<div class="lab"><b>' + esc(p.n) + ' <span class="tag" style="background:var(--chip-bg);color:var(--ink-sub)">' + esc(p.kind) + '</span></b><small class="mono">' + esc(p.host) + '</small></div>' + sw(p.on) + '</div>';
     });
     return h;
@@ -1135,10 +1254,16 @@
   };
   const LIVE_PAGES = { home: 1, chat: 1, run: 1, screens: 1, queue: 1, gates: 1, feed: 1, ideas: 1, me: 1 };
 
+  let lastNavKey = null, lastChatCount = 0;
   function render(keepScroll) {
-    const v = $('#view'); const top = keepScroll ? v.scrollTop : 0;
+    const v = $('#view');
+    const key = state.page && (PAGES[state.page] || SUB[state.page]) ? state.page : state.tab;
+    // 导航上下文未变时保持滚动位置；只有切换页签/页面才回到顶部
+    const navChanged = lastNavKey !== key;
+    const top = (keepScroll || !navChanged) ? v.scrollTop : 0;
     if (!state.account) {
       v.innerHTML = pageLogin();
+      const d0 = $('#composerDock'); if (d0) { d0.classList.remove('on'); d0.innerHTML = ''; }
       $('#topTitle').textContent = TITLES.login[0]; $('#topSub').textContent = TITLES.login[1];
       $('#topbar').className = '';
       $('#topDot').className = 'dot ok';
@@ -1146,12 +1271,33 @@
       document.documentElement.style.setProperty('--fs', state.fontSize + 'px');
       $('body').style.fontSize = state.fontSize + 'px';
       document.querySelectorAll('.tab').forEach(function (b) { b.classList.remove('on'); });
+      lastNavKey = 'login'; lastChatCount = 0;
       return;
     }
-    const key = state.page && (PAGES[state.page] || SUB[state.page]) ? state.page : state.tab;
     const fn = PAGES[key] || SUB[key] || pageHome;
     v.innerHTML = fn();
-    v.scrollTop = top;
+    // 输入条 dock：只在首次进入对话时创建，之后 tick 重建 view 不动它，草稿与光标不丢
+    const dock = $('#composerDock');
+    if (dock) {
+      if (key === 'chat') {
+        if (!dock.classList.contains('on') || !dock.querySelector('#chatInput')) {
+          dock.innerHTML = composerHtml(); dock.classList.add('on');
+        }
+      } else { dock.classList.remove('on'); dock.innerHTML = ''; }
+    }
+    // 聊天页新消息 / 刚切进对话 → 跟到最新一条；其余保持原滚动位置
+    const chatNew = key === 'chat' && state.chatMsgs.length > lastChatCount;
+    // 对话页：只要原本贴着底部就持续跟随最新一条；用户主动上滑看历史时不打扰
+    const distFromBottom = Math.max(0, v.scrollHeight - top - v.clientHeight);
+    const wantBottom = key === 'chat' && (chatNew || navChanged || distFromBottom < 120);
+    v.scrollTop = wantBottom ? v.scrollHeight : top;
+    if (wantBottom && typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(function () {
+        if (state.tab === 'chat' && !state.page) v.scrollTop = v.scrollHeight;
+      });
+    }
+    lastNavKey = key;
+    lastChatCount = key === 'chat' ? state.chatMsgs.length : 0;
     const T = TITLES[key] || ['Destiny', 'DESTINY'];
     $('#topTitle').textContent = T[0];
     $('#topSub').textContent = T[1];
@@ -1185,8 +1331,8 @@
   /* ────────────────────── Toast / Sheet ────────────────────── */
   function toast(msg) {
     let t = $('#toast'); if (!t) { t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; document.body.appendChild(t); }
-    t.textContent = msg; t.style.opacity = '1';
-    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.style.opacity = '0'; }, 2200);
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2200);
   }
   function openSheet(mode) {
     sheetMode = mode;
@@ -1383,7 +1529,7 @@
   (function buildTabbar() {
     const bar = $('#tabbar');
     bar.innerHTML = D.NAV.map(function (n) {
-      return '<button class="tab" data-tab="' + n.id + '"><span class="ti">' + n.glyph + '</span>' + n.label + '</button>';
+      return '<button class="tab" data-tab="' + n.id + '" aria-label="' + n.label + '"><span class="ti">' + ico(TAB_ICON[n.id] || 'grid') + '</span><span>' + n.label + '</span></button>';
     }).join('');
   })();
   initEngines();
