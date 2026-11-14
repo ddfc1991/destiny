@@ -18,18 +18,25 @@ Daemon will be stopped at the end of the build
 > Task :app:processReleaseManifest FROM-CACHE
 > Task :app:processReleaseManifestForPackage FROM-CACHE
 > Task :app:processReleaseResources FROM-CACHE
+> Task :app:compileReleaseKotlin FROM-CACHE
 > Task :app:javaPreCompileRelease FROM-CACHE
+> Task :app:compileReleaseJavaWithJavac FROM-CACHE
 > Task :app:extractProguardFiles
+> Task :app:generateReleaseLintVitalReportModel
+> Task :app:lintVitalAnalyzeRelease FROM-CACHE
 > Task :app:mergeReleaseJniLibFolders
 > Task :app:mergeReleaseNativeLibs
-> Task :app:checkReleaseDuplicateClasses
 
 > Task :app:stripReleaseDebugSymbols
 Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so.
 
-> Task :app:mergeReleaseArtProfile
+> Task :app:checkReleaseDuplicateClasses
 > Task :app:extractReleaseNativeSymbolTables FROM-CACHE
 > Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:mergeReleaseArtProfile
+> Task :app:expandReleaseArtProfileWildcards FROM-CACHE
+> Task :app:mergeReleaseGeneratedProguardFiles
+> Task :app:processReleaseJavaRes
 > Task :app:mergeReleaseStartupProfile
 > Task :app:mergeReleaseShaders
 > Task :app:compileReleaseShaders NO-SOURCE
@@ -43,26 +50,19 @@ Unable to strip the following libraries, packaging them as they are: libandroidx
 > Task :app:validateSigningRelease
 > Task :app:writeReleaseAppMetadata
 > Task :app:writeReleaseSigningConfigVersions
-> Task :app:compileReleaseKotlin
-> Task :app:compileReleaseJavaWithJavac
-> Task :app:generateReleaseLintVitalReportModel
-> Task :app:mergeReleaseGeneratedProguardFiles
-> Task :app:processReleaseJavaRes
-> Task :app:expandReleaseArtProfileWildcards
 > Task :app:mergeReleaseJavaResource
-> Task :app:lintVitalAnalyzeRelease
-> Task :app:minifyReleaseWithR8
-> Task :app:lintVitalReportRelease
-> Task :app:lintVitalRelease
-> Task :app:compileReleaseArtProfile
-> Task :app:shrinkReleaseRes
+> Task :app:minifyReleaseWithR8 FROM-CACHE
+> Task :app:compileReleaseArtProfile FROM-CACHE
+> Task :app:shrinkReleaseRes FROM-CACHE
 > Task :app:convertShrunkResourcesToBinaryRelease FROM-CACHE
 > Task :app:optimizeReleaseResources FROM-CACHE
 > Task :app:packageRelease
 > Task :app:createReleaseApkListingFileRedirect
+> Task :app:lintVitalReportRelease
+> Task :app:lintVitalRelease
 > Task :app:assembleRelease
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_4-1794628754652.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_4-1794631469971.json
 
-BUILD SUCCESSFUL in 2m 6s
-51 actionable tasks: 34 executed, 17 from cache
+BUILD SUCCESSFUL in 17s
+51 actionable tasks: 27 executed, 24 from cache
 exit_code=0
