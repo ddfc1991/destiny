@@ -62,21 +62,28 @@ jobs:
           tail -120 ../unit-test.log
           exit 0
 
-      - name: Publish test report to repo
+      - name: Build release APK
+        working-directory: android
+        run: |
+          set +e
+          gradle assembleRelease --no-daemon --console=plain > ../release-build.log 2>&1
+          code=$?
+          echo "exit_code=$code" >> ../release-build.log
+          tail -150 ../release-build.log
+          exit $code
+
+      - name: Publish build logs to repo
         if: always()
         continue-on-error: true
         run: |
           mkdir -p build-reports
           cp unit-test.log build-reports/unit-test.log 2>/dev/null || echo "no unit-test.log" > build-reports/unit-test.log
+          cp release-build.log build-reports/release-build.log 2>/dev/null || echo "no release-build.log" > build-reports/release-build.log
           git config user.name "ci-bot"
           git config user.email "ci-bot@users.noreply.github.com"
-          git add build-reports/unit-test.log
-          git commit -m "ci: publish unit test report" || echo "nothing to commit"
+          git add build-reports/
+          git commit -m "ci: publish build logs" || echo "nothing to commit"
           git push || echo "push failed"
-
-      - name: Build release APK
-        working-directory: android
-        run: gradle assembleRelease --no-daemon --stacktrace
 
       - name: Collect APK
         run: |

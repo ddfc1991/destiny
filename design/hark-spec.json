@@ -1,0 +1,76 @@
+{
+  "_comment": "Destiny 原生 App · Hark 合规规格（对话主链页）。用 hark_check.py 校验，是规则落地的自证。",
+
+  "meta": {
+    "screen": "对话（主链）",
+    "type": "agent"
+  },
+
+  "palette": {
+    "_comment": "单页色彩 ≤4：底 / 文字 / 强调 / 状态。深墨底为主基调。",
+    "colors": [
+      { "role": "background", "hex": "#101014", "usage": "页面底（Obsidian850）" },
+      { "role": "ink",        "hex": "#F2F0EC", "usage": "正文（InkPrimary）" },
+      { "role": "primary",    "hex": "#B09278", "usage": "唯一强调色（香槟金低饱和版）" },
+      { "role": "status",     "hex": "#7C93A6", "usage": "状态弱提示（SignalInfo）" }
+    ],
+    "auxiliary": [
+      { "hex": "#9C8560", "usage": "等你决定（SignalWarn）" },
+      { "hex": "#5E8C6E", "usage": "已完成（SignalOK）" }
+    ],
+    "primaryAlpha": 0.12,
+    "gradients": [],
+    "redBadges": false,
+    "colorOnlyStatus": false
+  },
+
+  "shape": {
+    "radii": [8, 8, 8, 8],
+    "shadows": [
+      { "opacity": 0.22, "blur": 12, "offsetY": 2, "spread": 0 }
+    ],
+    "glassmorphismUsage": "none"
+  },
+
+  "space": {
+    "unit": 8,
+    "values": [16, 8, 32, 16, 4],
+    "screenPadding": 16
+  },
+
+  "typography": {
+    "families": ["Roboto"],
+    "minLevelGap": 4,
+    "levels": [
+      { "role": "display",  "size": 28, "weight": 700, "group": "h1" },
+      { "role": "title",    "size": 22, "weight": 700, "group": "h1" },
+      { "role": "headline", "size": 18, "weight": 700, "group": "h1" },
+      { "role": "body",     "size": 15, "weight": 400, "group": "h2" },
+      { "role": "label",    "size": 13, "weight": 500, "group": "h2" },
+      { "role": "caption",  "size": 11, "weight": 400, "group": "h3" }
+    ]
+  },
+
+  "motion": {
+    "durations": [260, 200, 340],
+    "maxTranslate": 8,
+    "scaleRange": [0.98, 1.02],
+    "spinner": false
+  },
+
+  "ux": {
+    "chatBubbles": false,
+    "sessionList": false,
+    "newChatButton": false,
+    "guideButtons": [],
+    "primaryActions": [
+      { "label": "就这么办", "action": "inline" },
+      { "label": "查看执行过程", "action": "inline" }
+    ],
+    "topActionsCount": 2,
+    "stepsVisible": true,
+    "progressWithEta": true,
+    "humanHandoff": true,
+    "backgroundSilence": false
+  }
+}
