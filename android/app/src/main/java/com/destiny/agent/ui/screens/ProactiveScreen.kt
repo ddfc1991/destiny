@@ -126,7 +126,7 @@ fun ProactiveScreen(store: DestinyStore, onOpenTask: (String) -> Unit) {
                         GhostButton(
                             "让它现在想一想",
                             icon = Icons.Wand,
-                            tint = a.champagne
+                            tone = a.champagne
                         ) { store.generateSuggestions() }
                     }
                 }

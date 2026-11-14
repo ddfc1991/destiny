@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -147,13 +148,14 @@ private fun TabItem(
                         .offset(x = 8.dp, y = (-5).dp)
                         .size(if (badge > 9) 16.dp else 14.dp)
                         .clip(CircleShape)
-                        .background(a.danger),
+                        // Hark：禁用红色角标，改用低饱和浅蓝弱提示
+                        .background(a.info),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         if (badge > 9) "9+" else badge.toString(),
                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp),
-                        color = Color(0xFF0A0A0C)
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }

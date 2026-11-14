@@ -612,7 +612,7 @@ object DestinyCore {
 
     data class Assembly(
         val capabilities: List<Capability>,
-        val groupsCollapsed: Boolean,
+        var groupsCollapsed: Boolean,
         var expandsUsed: Int
     )
 
@@ -710,7 +710,7 @@ object DestinyCore {
         fun rate(): Int {
             val fin = items.filter { it.state != "pending" }
             if (fin.isEmpty()) return 0
-            return Math.round(fin.count { it.state == "accepted" } * 100.0 / fin.size)
+            return Math.round(fin.count { it.state == "accepted" } * 100.0 / fin.size).toInt()
         }
     }
 

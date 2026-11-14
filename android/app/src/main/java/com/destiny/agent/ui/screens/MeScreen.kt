@@ -423,7 +423,7 @@ fun MeScreen(store: DestinyStore) {
                     GhostButton(
                         if (showDecisions) "收起取舍矩阵" else "展开取舍矩阵",
                         icon = Icons.List,
-                        tint = a.champagne
+                        tone = a.champagne
                     ) { showDecisions = !showDecisions }
 
                     if (showDecisions) {
