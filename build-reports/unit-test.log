@@ -1,6 +1,6 @@
 To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.9/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
 Daemon will be stopped at the end of the build 
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/unit-1794625183398.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/unit-1794625480603.json
 
 FAILURE: Build failed with an exception.
 
@@ -20,5 +20,5 @@ Plugin [id: 'org.jetbrains.kotlin.plugin.serialization'] was not found in any of
 > Run with --scan to get full insights.
 > Get more help at https://help.gradle.org.
 
-BUILD FAILED in 6s
+BUILD FAILED in 5s
 exit_code=1
