@@ -783,7 +783,7 @@ private fun EndpointField(
                 )
             ),
             cursorBrush = SolidColor(a.champagne),
-            visualTransformation = if (obcure) PasswordVisualTransformation() else VisualTransformation.None,
+            visualTransformation = if (obscure) PasswordVisualTransformation() else VisualTransformation.None,
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 48.dp)
