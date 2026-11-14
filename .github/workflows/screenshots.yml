@@ -74,15 +74,37 @@ jobs:
 
       - name: Publish screenshots to repo
         run: |
-          set -e
-          ls -la shots/ || true
+          set +e
+          ls -la shots/ 2>&1 | head -30
+          COUNT=$(ls shots/*.png 2>/dev/null | wc -l)
+          echo "截图数量: $COUNT"
+          if [ "$COUNT" -eq 0 ]; then
+            echo "::warning::没有产生任何截图，跳过回传"
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f shots/*.png
-          git diff --cached --name-only | head -20
           if git diff --cached --quiet; then
-            echo "no screenshot changes"
-          else
-            git commit -m "chore: 真机截图（${{ github.sha }}）"
-            git push
+            echo "截图与仓库中的一致，无需提交"
+            exit 0
           fi
+          git commit -m "chore: 真机截图 (${{ github.sha }})"
+          # push 失败不阻断整个 workflow —— artifact 已经拿到了
+          git push || echo "::warning::推回仓库失败，但 artifact 里已有截图"
+          exit 0
+
+      - name: Publish screenshot logs
+        if: always()
+        run: |
+          set +e
+          mkdir -p build-reports
+          adb logcat -d -t 400 > build-reports/screenshot-logcat.log 2>&1
+          echo "--- exit-info ---" >> build-reports/screenshot-logcat.log
+          adb shell dumpsys activity exit-info com.destiny.agent >> build-reports/screenshot-logcat.log 2>&1
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f build-reports/screenshot-logcat.log
+          git commit -m "chore: 截图日志" || true
+          git push || true
+          exit 0
