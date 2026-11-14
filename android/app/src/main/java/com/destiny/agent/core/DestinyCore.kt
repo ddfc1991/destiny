@@ -408,7 +408,8 @@ object DestinyCore {
         val slots = arrayOfNulls<String>(size)
         val locks = mutableMapOf<String, String>()
         val waitFor = mutableMapOf<String, String>()
-        val order = mutableListOf<Pair<String, Int>>()
+        /** 占用记录：id → 槽位 → app（对齐 JS 原版 order.push({id, slot, app})） */
+        val order = mutableListOf<Triple<String, Int, String>>()
 
         fun acquire(task: PoolTask): Acquire {
             val app = task.app
@@ -428,7 +429,7 @@ object DestinyCore {
             if (slot < 0) return Acquire.Wait("slot", null)
             slots[slot] = id
             locks[app] = id
-            order.add(id to slot)
+            order.add(Triple(id, slot, app))
             waitFor.remove(id)
             return Acquire.Ok(slot)
         }
@@ -457,7 +458,7 @@ object DestinyCore {
                 if (order[i].first != id) continue
                 val e = order[i]
                 if (slots[e.second] == id) slots[e.second] = null
-                if (locks[e.first] == id) locks.remove(e.first)
+                if (locks[e.third] == id) locks.remove(e.third)
                 order.removeAt(i)
             }
             waitFor.remove(id)

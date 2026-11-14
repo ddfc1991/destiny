@@ -86,9 +86,16 @@ jobs:
           git push || echo "push failed"
 
       - name: Collect APK
+        id: collect
         run: |
           cp android/app/build/outputs/apk/release/app-release.apk Destiny-native.apk
           ls -lh Destiny-native.apk
+          CODE=$(grep -oE 'exit_code=[0-9]+' unit-test.log 2>/dev/null | tail -1 | cut -d= -f2)
+          if [ "$CODE" = "0" ]; then
+            echo "tests=单元测试全部通过" >> $GITHUB_OUTPUT
+          else
+            echo "tests=单元测试有失败项（详见仓库 build-reports/unit-test.log）" >> $GITHUB_OUTPUT
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -109,5 +116,7 @@ jobs:
             - 持久记忆：关于你 / 偏好 / 做法三分法，做法要你点头才生效
             - Computer Use：云端电脑操作网页，登录与付款环节交你亲手来
             - 引擎逻辑自 destiny-core.js 逐节移植，62 项断言在 CI 里跑单元测试
+            - ${{ steps.collect.outputs.tests }}
+            - 设计规范：Hark Pro 克制审美（低饱和莫兰迪 / 8pt 圆角栅格 / 单一无衬线 / AI 操作全透明）
           files: Destiny-native.apk
           make_latest: true
