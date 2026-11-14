@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 深色优先：Destiny 默认主题是曜石（Obsidian），App 内可切到暖白纸感 -->
+    <style name="Theme.Destiny" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/obsidian_850</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

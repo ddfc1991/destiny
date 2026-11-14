@@ -1,16 +1,18 @@
-name: Build APK
+name: Build Web Shell APK
+
+# 说明：这是「网页壳」的备用出包通道，仅手动触发。
+# 主线交付物是 build-native-apk.yml 产出的原生 Kotlin 包。
+# 本 workflow 全程在隔离的 web-shell/ 目录里跑，不会碰原生工程 android/。
 
 on:
-  push:
-    branches: [main]
-    tags: ['v*']
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  apk:
+  web:
+    name: 网页壳（备用）
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,20 +26,22 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Prepare web assets
+      - name: Prepare web assets (isolated)
         run: |
-          mkdir -p www
-          cp index.html destiny.css destiny-app.js destiny-core.js destiny-data.js destiny-icon.svg manifest.webmanifest sw.js www/
+          mkdir -p web-shell/www
+          cp index.html destiny.css destiny-app.js destiny-core.js destiny-data.js destiny-icon.svg manifest.webmanifest sw.js web-shell/www/
+          cp capacitor.config.json package.json web-shell/
 
-      - name: Capacitor add / sync android
+      - name: Capacitor add / sync android (inside web-shell)
+        working-directory: web-shell
         run: |
           npm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 --no-audit --no-fund
-          npx cap add android || true
+          npx cap add android
           npx cap sync android
 
       - name: Apply Destiny launcher icon
         run: |
-          RES=android/app/src/main/res
+          RES=web-shell/android/app/src/main/res
           mkdir -p "$RES/drawable"
           cp android-icons/ic_launcher_background.xml "$RES/drawable/ic_launcher_background.xml"
           cp android-icons/ic_launcher_foreground.xml "$RES/drawable/ic_launcher_foreground.xml"
@@ -54,35 +58,25 @@ jobs:
           done
 
       - name: Build debug APK
+        working-directory: web-shell/android
         run: |
-          cd android
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
       - name: Rename APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk Destiny-debug.apk
+        run: cp web-shell/android/app/build/outputs/apk/debug/app-debug.apk Destiny-web-shell.apk
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Destiny-debug-apk
-          path: Destiny-debug.apk
+          name: Destiny-web-shell-apk
+          path: Destiny-web-shell.apk
 
-      - name: Rolling release (latest)
-        if: github.ref == 'refs/heads/main'
+      - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: apk-latest
-          name: Destiny APK (latest)
-          body: |
-            Destiny 安卓调试包（debug 签名，可直接安装）。
-            - UI 与账户参考 Toki：聊天流主界面 + Google/邮箱/手机号登录
-            - 本地确定性引擎，不含真实模型调用
-          files: Destiny-debug.apk
-          make_latest: true
-
-      - name: Release on version tag
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: Destiny-debug.apk
+          tag_name: apk-web-shell-latest
+          name: Destiny 网页壳 APK
+          body: 网页壳备用包。主线是原生 Kotlin 包（apk-native-latest）。
+          files: Destiny-web-shell.apk
+          make_latest: false

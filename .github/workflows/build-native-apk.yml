@@ -1,0 +1,86 @@
+name: Build Native APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: native-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    name: Kotlin + Compose 原生包
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools platforms;android-35 build-tools;35.0.0"
+
+      - name: Accept licenses
+        run: yes | sdkmanager --licenses > /dev/null || true
+
+      - name: Install Gradle 8.9
+        run: |
+          curl -fsSL https://services.gradle.org/distributions/gradle-8.9-bin.zip -o /tmp/gradle.zip
+          sudo unzip -q /tmp/gradle.zip -d /opt
+          echo "/opt/gradle-8.9/bin" >> "$GITHUB_PATH"
+
+      - name: Gradle cache
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Generate release keystore
+        run: |
+          keytool -genkeypair -v -keystore android/app/release.keystore -alias destiny \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass destiny2026 -keypass destiny2026 \
+            -dname "CN=Destiny, OU=Studio, O=Destiny, L=Shanghai, ST=Shanghai, C=CN"
+          printf 'storeFile=app/release.keystore\nstorePassword=destiny2026\nkeyAlias=destiny\nkeyPassword=destiny2026\n' \
+            > android/keystore.properties
+
+      - name: Engine unit tests (JVM)
+        working-directory: android
+        run: gradle testDebugUnitTest --no-daemon --stacktrace
+
+      - name: Build release APK
+        working-directory: android
+        run: gradle assembleRelease --no-daemon --stacktrace
+
+      - name: Collect APK
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk Destiny-native.apk
+          ls -lh Destiny-native.apk
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Destiny-native-apk
+          path: Destiny-native.apk
+
+      - name: Rolling release (latest)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-native-latest
+          name: Destiny 原生 APK（latest）
+          body: |
+            **Destiny · 原生 Android 包**（Kotlin + Jetpack Compose，非网页套壳）
+
+            - 定位：不是聊天机器人，是替你办事的个人智能体
+            - 主动执行：日程到点自动派活、基于你确认过的偏好主动出手
+            - 持久记忆：关于你 / 偏好 / 做法三分法，做法要你点头才生效
+            - Computer Use：云端电脑操作网页，登录与付款环节交你亲手来
+            - 引擎逻辑自 destiny-core.js 逐节移植，62 项断言在 CI 里跑单元测试
+          files: Destiny-native.apk
+          make_latest: true

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Destiny 自适应图标前景：108×108 画布，星形落在中心 72dp 安全区内 -->
+<!-- Destiny 自适应图标前景：香槟金四角星，落在中心安全区内 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-  <path
-      android:fillColor="#FFFDF8"
-      android:pathData="M54,24 L60,48 L84,54 L60,60 L54,84 L48,60 L24,54 L48,48 Z" />
+    <path
+        android:fillColor="#C9A227"
+        android:pathData="M54,24 L60,48 L84,54 L60,60 L54,84 L48,60 L24,54 L48,48 Z" />
 </vector>

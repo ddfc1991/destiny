@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 曜石香槟 · Obsidian & Champagne -->
+    <color name="obsidian_900">#0A0A0C</color>
+    <color name="obsidian_850">#101014</color>
+    <color name="obsidian_800">#16161B</color>
+    <color name="champagne">#C9A227</color>
+    <color name="champagne_bright">#E0BC52</color>
+    <color name="ink_primary">#F2F0EC</color>
+    <color name="paper_000">#FBFAF7</color>
+</resources>
