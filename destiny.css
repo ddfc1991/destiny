@@ -20,7 +20,8 @@
   --s-screen: 16px; --row-min: 52px; --topbar: 56px; --btn-min: 44px;
   --tap-min: 44px;   /* 无障碍最小点击热区 */
   /* 图标 */
-  --ic-std: 20px; --ic-nav: 21px; --ic-grid: 46px; --ic-chip: 36px; --stroke: 1.8;
+  --ic-std: 20px; --ic-nav: 22px; --ic-grid: 46px; --ic-chip: 36px; --stroke: 2;
+  --stroke-hi: 2.3;   /* 小尺寸图标加粗，避免 19px 下发虚 */
 }
 
 /* ── 浅色：暖瓷（更平、更干净，去掉过强的径向光斑） ── */
@@ -41,7 +42,7 @@
   --agent: #2F5D7C;            /* 系统 / Agent 专属 */
   --agent-soft: rgba(47, 93, 124, 0.10);
   --agent-ink: #FFFFFF;
-  --icon-bg: rgba(47, 93, 124, 0.09);
+  --icon-bg: rgba(47, 93, 124, 0.13);
   --ok: #2F7A51; --warn: #A9701A; --err: #B63A44; --info: #2F5D7C;
   --blue: #2F5D7C; --green: #2F7A51; --purple: #6A5490; --amber: #A9701A;
   --slate: #5E6E7E; --sky: #4C7A93; --brick: #A45B4B; --teal: #4E7F79;
@@ -72,7 +73,7 @@
   --agent: #88B9DC;
   --agent-soft: rgba(136, 185, 220, 0.13);
   --agent-ink: #0F1620;
-  --icon-bg: rgba(136, 185, 220, 0.12);
+  --icon-bg: rgba(136, 185, 220, 0.16);
   --ok: #71BE94; --warn: #E0B063; --err: #E87A84; --info: #88B9DC;
   --blue: #88B9DC; --green: #71BE94; --purple: #B09AD6; --amber: #E0B063;
   --slate: #98A7B7; --sky: #9CBBD0; --brick: #D69A88; --teal: #93C3BC;
@@ -100,6 +101,8 @@ button { font-family: inherit; }
 svg.ic { display: block; width: 20px; height: 20px; flex: 0 0 auto;
   stroke: currentColor; fill: none; stroke-width: var(--stroke);
   stroke-linecap: round; stroke-linejoin: round; }
+/* 实心锚点：仅用于闭合形状（发送 / 品牌 / 播放），避免线性 path 强填变丑 */
+svg.ic.is-fill { fill: currentColor; stroke: none; }
 
 /* ─────────────────── 外壳 ─────────────────── */
 #app { max-width: 480px; margin: 0 auto; height: 100dvh; height: 100vh; position: relative;
@@ -128,7 +131,7 @@ svg.ic { display: block; width: 20px; height: 20px; flex: 0 0 auto;
   border: 1px solid var(--line); background: var(--chip-bg); color: var(--ink);
   display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex: 0 0 auto; }
 .iconbtn:active { transform: scale(.94); }
-.iconbtn svg.ic { width: 19px; height: 19px; }
+.iconbtn svg.ic { width: 20px; height: 20px; }
 
 /* 顶部固定预留 toast 高度：toast 永不遮挡内容，且布局高度不随 toast 抖动 */
 #view { flex: 1; overflow-y: auto; padding: 48px var(--s-screen) 20px; -webkit-overflow-scrolling: touch; }
@@ -161,7 +164,7 @@ svg.ic { display: block; width: 20px; height: 20px; flex: 0 0 auto;
 .row .ic { width: var(--ic-chip); height: var(--ic-chip); border-radius: 11px; flex: 0 0 auto;
   display: flex; align-items: center; justify-content: center;
   background: var(--icon-bg); color: var(--agent); }
-.row .ic svg.ic { width: 19px; height: 19px; }
+.row .ic svg.ic { width: 20px; height: 20px; }
 .row .ic.tone-warn { background: color-mix(in srgb, var(--warn) 14%, transparent); color: var(--warn); }
 .row .ic.tone-err  { background: color-mix(in srgb, var(--err) 14%, transparent); color: var(--err); }
 .row .ic.tone-ok   { background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
@@ -170,7 +173,7 @@ svg.ic { display: block; width: 20px; height: 20px; flex: 0 0 auto;
 .row .lab small { color: var(--ink-sub); font-size: var(--fs-sec); line-height: 1.45; display: block; margin-top: 1px; }
 .row .val { color: var(--ink-sub); font-size: var(--fs-sec); text-align: right; }
 .row .chev { color: var(--ink-faint); flex: 0 0 auto; display: flex; }
-.row .chev svg.ic { width: 16px; height: 16px; }
+.row .chev svg.ic { width: 17px; height: 17px; }
 .row .badge { background: var(--err); color: #fff; font-size: 11px;
   min-width: 18px; height: 18px; border-radius: var(--r-pill); display: inline-flex;
   align-items: center; justify-content: center; padding: 0 5px; font-weight: var(--fw-bold); }
@@ -221,6 +224,7 @@ svg.ic { display: block; width: 20px; height: 20px; flex: 0 0 auto;
   display: flex; align-items: center; justify-content: center;
   color: #fff; font-weight: var(--fw-semi); font-size: 15px; overflow: hidden; }
 .it .av { background: var(--agent) !important; color: var(--agent-ink); }
+.it .av svg.ic { width: 18px; height: 18px; stroke-width: var(--stroke-hi); }
 .rt { flex: 1; min-width: 0; }
 .rt b { font-size: var(--fs-body); font-weight: var(--fw-mid); display: block;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -240,7 +244,7 @@ svg.ic { display: block; width: 20px; height: 20px; flex: 0 0 auto;
   background: var(--icon-bg); color: var(--agent); }
 .cap .c.tone-warn { background: color-mix(in srgb, var(--warn) 14%, transparent); color: var(--warn); }
 .cap .c.tone-ok { background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
-.cap .c svg.ic { width: 22px; height: 22px; }
+.cap .c svg.ic { width: 24px; height: 24px; }
 .cap b { font-size: var(--fs-sec); font-weight: var(--fw-semi); text-align: center; }
 .cap small { font-size: 10.5px; color: var(--ink-faint); text-align: center; }
 
@@ -255,8 +259,9 @@ svg.ic { display: block; width: 20px; height: 20px; flex: 0 0 auto;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
   min-height: 48px; padding: 4px 0; font-size: 10.5px; font-weight: var(--fw-mid);
   cursor: pointer; position: relative; border-radius: var(--r-pill); transition: color .15s ease, background .15s ease; }
-#tabbar .tab .ti { display: flex; align-items: center; justify-content: center; height: 22px; }
+#tabbar .tab .ti { display: flex; align-items: center; justify-content: center; height: 24px; }
 #tabbar .tab .ti svg.ic { width: var(--ic-nav); height: var(--ic-nav); }
+#tabbar .tab.on .ti svg.ic { stroke-width: 2.5; }
 #tabbar .tab.on { color: var(--accent); font-weight: var(--fw-bold); background: color-mix(in srgb, var(--accent) 11%, transparent); }
 #tabbar .tab.on::after { display: none; }
 #tabbar .tab .badge { position: absolute; top: 2px; right: 50%; margin-right: -20px;
@@ -354,7 +359,7 @@ textarea.inp { min-height: 80px; resize: vertical; }
 .sess .st small { color: var(--ink-sub); font-size: var(--fs-sec); }
 .empty { text-align: center; padding: 44px 20px; color: var(--ink-faint); }
 .empty .e-ic { display: flex; justify-content: center; color: var(--agent); opacity: .7; margin-bottom: 2px; }
-.empty .e-ic svg.ic { width: 42px; height: 42px; stroke-width: 1.3; }
+.empty .e-ic svg.ic { width: 42px; height: 42px; stroke-width: 1.8; }
 .empty b { display: block; margin-top: 12px; color: var(--ink); font-weight: var(--fw-semi); font-size: var(--fs-title-s); }
 .empty small { font-size: var(--fs-sec); color: var(--ink-sub); line-height: 1.6; display: block; margin-top: 5px; }
 
@@ -383,7 +388,7 @@ textarea.inp { min-height: 80px; resize: vertical; }
 .login-logo { width: 76px; height: 76px; border-radius: 24px; background: var(--accent); color: var(--accent-ink);
   display: flex; align-items: center; justify-content: center; margin-bottom: 18px;
   box-shadow: 0 14px 34px color-mix(in srgb, var(--accent) 30%, transparent); }
-.login-logo svg.ic { width: 38px; height: 38px; stroke-width: 1.6; }
+.login-logo svg.ic { width: 40px; height: 40px; }
 .login-ttl { font-size: 28px; font-weight: var(--fw-bold); letter-spacing: -.4px; }
 .login-sub { color: var(--ink-sub); font-size: var(--fs-body); line-height: 1.65; text-align: center; margin: 8px 0 30px; max-width: 300px; }
 .login-methods { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 320px; }
@@ -406,7 +411,7 @@ textarea.inp { min-height: 80px; resize: vertical; }
 .msg .av { width: 30px; height: 30px; border-radius: var(--r-pill); flex: 0 0 auto;
   display: flex; align-items: center; justify-content: center;
   background: var(--agent); color: var(--agent-ink); }
-.msg .av svg.ic { width: 17px; height: 17px; stroke-width: 2; }
+.msg .av svg.ic { width: 18px; height: 18px; stroke-width: var(--stroke-hi); }
 /* 气泡 */
 .bub { max-width: 80%; padding: 10px 14px; border-radius: var(--r-bub); font-size: var(--fs-body); line-height: 1.6;
   background: var(--card-solid); border: 1px solid var(--line); word-break: break-word; box-shadow: var(--shadow); }
@@ -422,7 +427,7 @@ textarea.inp { min-height: 80px; resize: vertical; }
 /* 显性 CTA：气泡内尾行 */
 .bub-go { display: flex; align-items: center; gap: 4px; margin-top: 8px; padding-top: 8px;
   border-top: 1px solid var(--line); color: var(--agent); font-size: var(--fs-sec); font-weight: var(--fw-semi); }
-.bub-go svg.ic { width: 14px; height: 14px; }
+.bub-go svg.ic { width: 15px; height: 15px; }
 /* 执行指示：独立状态，不与普通回复混淆 */
 .bub.live { background: var(--agent-soft); border: 1px dashed color-mix(in srgb, var(--agent) 45%, transparent);
   border-left: 3px solid var(--agent); box-shadow: none; }
@@ -460,10 +465,10 @@ textarea.inp { min-height: 80px; resize: vertical; }
   display: flex; align-items: center; justify-content: center; cursor: pointer;
   color: var(--ink-sub); flex: 0 0 auto; }
 .cbtn:active { transform: scale(.92); background: var(--chip-bg); }
-.cbtn svg.ic { width: 19px; height: 19px; }
+.cbtn svg.ic { width: 20px; height: 20px; }
 .cbtn.send { background: var(--accent); color: var(--accent-ink); }
 .cbtn.send:active { background: var(--accent-2); }
-.cbtn.send svg.ic { width: 18px; height: 18px; }
+.cbtn.send svg.ic { width: 19px; height: 19px; }
 
 /* ─────────────────── 适配 ─────────────────── */
 /* 小屏 320px：宫格改 4 列但压缩内边距，避免文字换行溢出 */
@@ -485,12 +490,22 @@ textarea.inp { min-height: 80px; resize: vertical; }
   background: var(--agent); color: var(--agent-ink); }
 /* 文本内的行内图标对齐 */
 .btn svg.ic, .notice svg.ic, .bub-go svg.ic { display: inline-block; vertical-align: -4px;
-  width: 16px; height: 16px; margin-right: 5px; }
+  width: 17px; height: 17px; margin-right: 5px; }
 .notice svg.ic { color: var(--warn); }
 .notice.risk { border-color: color-mix(in srgb, var(--err) 36%, transparent);
   background: color-mix(in srgb, var(--err) 8%, transparent); }
 .notice.risk svg.ic { color: var(--err); }
 .notice > div svg.ic { vertical-align: -4px; }
+
+/* ─────────────────── Icon System v3 · 行内图标收口 ───────────────────
+   问候语 / 排队等待 / 已选标记 / 空态里的 emoji 与 Unicode 符号全部换成
+   同一套 SVG，避免跨机型渲染成方块或彩色字重不一致。 */
+.hero-greet svg.ic { display: inline-block; width: 22px; height: 22px;
+  vertical-align: -3px; color: var(--warn); }
+.wait svg.ic { display: inline-block; width: 14px; height: 14px;
+  vertical-align: -3px; color: var(--warn); margin-right: 2px; }
+.row .lab b svg.ic { display: inline-block; width: 15px; height: 15px;
+  vertical-align: -3px; color: var(--ok); margin-right: 3px; }
 /* 卡片内标题与统计的分层 */
 .card.hero .stat-grid, .card.elevated .stat-grid { margin-top: 18px; }
 .card.hero .stat, .card.elevated .stat { background: var(--chip-bg); }

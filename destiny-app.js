@@ -90,16 +90,55 @@
     sync: '<path d="M4 8h13l-3-3M20 16H7l3 3"/>',
     inbox: '<path d="M3 12h5l2 3h4l2-3h5"/><path d="M5 5h14l2 7v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7z"/>'
   };
-  function ico(n) {
-    return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (ICON[n] || ICON.grid) + '</svg>';
+
+  /* ── Icon System v3 ───────────────────────────────────────────────
+     修正 v2 的三类可见缺陷：
+     1) 语义错配：日程=房子 / 动态=指南针 / 想法=四角星
+     2) 复杂 path 缩到 19px 糊成一团：齿轮、调色板、回形针
+     3) 全线性无锚点：新增实心版本，只用于主操作与品牌符号
+     路径统一 Lucide 规范（24×24 / round cap / MIT），离线内联不引依赖。
+  ───────────────────────────────────────────────────────────────── */
+  const ICON_V3 = {
+    home: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>',
+    compass: '<path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.5"/>',
+    settings: '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+    palette: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    clip: '<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.48-8.49a4 4 0 0 1 5.66 5.66l-8.49 8.48a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
+    bulb: '<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>',
+    image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
+    messageSquare: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+    circleDot: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/>',
+    gitBranch: '<path d="M6 3v12"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
+    shieldCheck: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+    arrowUpRight: '<path d="M7 17 17 7M8 7h9v9"/>',
+    target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+    star: '<path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.9-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/>',
+    sliders: '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    arrowUp: '<path d="M12 19V5M5 12l7-7 7 7"/>'
+  };
+  Object.assign(ICON, ICON_V3);
+  /* 实心版本：只给形状闭合、适合填充的图标，避免线性 path 强填变丑 */
+  const ICON_FILL = {
+    send: '<path d="M21.4 2.6a1 1 0 0 0-1.1-.2L2.7 10.1a1 1 0 0 0 .1 1.9l7.2 2.2 2.2 7.2a1 1 0 0 0 1.9.1l7.6-17.6a1 1 0 0 0-.3-1.3z"/>',
+    spark: '<path d="M12 1.6 14.3 8.6l7 2.2-7 2.2-2.3 7-2.3-7-7-2.2 7-2.2z"/>',
+    play: '<circle cx="12" cy="12" r="10"/><path d="m9.5 7.5 7 4.5-7 4.5z"/>'
+  };
+  function ico(n, solid) {
+    const filled = solid && ICON_FILL[n];
+    return '<svg class="ic' + (filled ? ' is-fill' : '') + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+      (filled || ICON[n] || ICON.circleDot) + '</svg>';
   }
-  /* 行图标按功能语义选择，不再由调用方随机指定装饰色 */
+  /* 行图标按功能语义选择，不再由调用方随机指定装饰色。
+     v3：补足规则覆盖率，兜底从「四格方块」改为中性圆点，避免整页重复方块。 */
   const ICON_RULES = [
-    [/账户|登录|身份|我的|退出/, 'user'],
+    [/关于|规格|说明|帮助|运行模式说明/, 'info'],
+    [/退出登录|注销|登出/, 'logout'],
+    [/账户|登录|身份|我的/, 'user'],
     [/连接服务|同步|服务商/, 'sync'],
     [/运行模式|云端|网关|端点/, 'cloud'],
-    [/询问|自主|偏好/, 'settings'],
-    [/闸门|红线|授权|审批|付款|钱包|风险/, 'shield'],
+    [/询问|自主|偏好|设置/, 'settings'],
+    [/闸门|红线|授权|审批|付款|钱包|风险|最小权限/, 'shield'],
     [/虚拟屏|避让|排队|槽位|屏幕/, 'monitor'],
     [/恢复|修复|自检|诊断|督查|检阅/, 'activity'],
     [/外观|主题|字体|显示/, 'palette'],
@@ -107,26 +146,30 @@
     [/决策|取舍|融合|图谱/, 'layers'],
     [/密钥|凭证|隔离|保险库/, 'key'],
     [/MCP|插件|扩展/, 'plug'],
-    [/条件|定时|计划|提醒|日程/, 'clock'],
+    [/条件|定时|计划|提醒|日程|日历|日期/, 'clock'],
     [/监控|用量|统计|Token/, 'chart'],
-    [/关于|规格|说明|运行模式说明/, 'info'],
-    [/模块|能力|路由/, 'route'],
+    [/模块|能力|路由|分支/, 'route'],
     [/邮件|消息|收件/, 'mail'],
     [/群聊|群组|多人/, 'users'],
     [/机器人/, 'bot'],
     [/沙箱|容器/, 'box'],
-    [/记忆|知识|资料/, 'database'],
-    [/想法|灵感/, 'spark'],
-    [/动态|关注/, 'compass'],
-    [/公众号|文章|阅读|朗读/, 'book'],
-    [/日历|日期/, 'calendar'],
-    [/会话|任务|清单/, 'list'],
-    [/会话列表|聊天/, 'chat']
+    [/记忆|知识|资料|存储/, 'database'],
+    [/想法|灵感|点子/, 'bulb'],
+    [/动态|关注|订阅/, 'compass'],
+    [/公众号|文章|阅读/, 'book'],
+    [/视频|播放|朗读/, 'play'],
+    [/扫码|扫描|识别/, 'scan'],
+    [/图片|附件|截图/, 'image'],
+    [/目标|指标|KPI/, 'target'],
+    [/锁|权限|安全/, 'lock'],
+    [/会话|任务|清单|列表/, 'list'],
+    [/聊天|对话/, 'chat'],
+    [/执行|启动|心跳/, 'bolt']
   ];
   function pickIcon(label) {
     const L = String(label || '');
     for (let i = 0; i < ICON_RULES.length; i++) if (ICON_RULES[i][0].test(L)) return ICON_RULES[i][1];
-    return 'grid';
+    return 'circleDot';
   }
   function pickTone(label) {
     const L = String(label || '');
@@ -135,11 +178,19 @@
     if (/完成|通过|已连接|在线|就绪/.test(L)) return 'tone-ok';
     return '';
   }
-  const TAB_ICON = { chat: 'chat', home: 'home', feed: 'compass', ideas: 'spark', me: 'user' };
+  /* v3 语义修正：日程→日历、动态→订阅流、想法→灯泡 */
+  const TAB_ICON = { chat: 'chat', home: 'home', feed: 'compass', ideas: 'bulb', me: 'user' };
   const CAP_ICON = {
-    '手机操控': 'phone', '微信': 'chat', 'App 访问': 'grid', '钱包': 'wallet',
+    '手机操控': 'phone', '微信': 'chat', 'App 访问': 'shieldCheck', '钱包': 'wallet',
     '沙箱': 'box', '监控': 'chart', '密钥库': 'key', '设置': 'settings'
   };
+  /* 任务列表徽标：中文首字 → App 语义图标，让图标语言全局统一 */
+  const APP_ICON = {
+    '微信': 'chat', '飞书': 'users', '支付宝': 'wallet', '小红书': 'book', '知乎': 'book',
+    '闲鱼': 'box', '抖音': 'play', 'B站': 'play', 'GitHub': 'gitBranch',
+    '邮件': 'mail', '日历': 'calendar', '浏览器': 'compass', '其他': 'layers'
+  };
+  function appIcon(a) { return ico(APP_ICON[a] || 'layers'); }
   function capTone(n) { return n === '钱包' ? 'tone-warn' : (n === '沙箱' ? 'tone-ok' : ''); }
 
   /* ────────────────────────── 状态 ────────────────────────── */
@@ -357,6 +408,8 @@
   }
   function section(t, n) { return '<div class="section-title">' + esc(t) + (n != null ? ' <span class="mono" style="color:var(--ink-faint)">' + n + '</span>' : '') + '</div>'; }
   function rowsHtml(list) { return list.join(''); }
+  /* glyph / color 为 v1 遗留参数：v2 起图标由 pickIcon()、色调由 pickTone() 统一决定。
+     调用方传入的字符只作「是否显示图标」的布尔标志，不会被渲染成文字。 */
   function row(label, sub, val, act, extra, glyph, color) {
     const ic = glyph ? '<div class="ic ' + pickTone(label) + '">' + ico(pickIcon(label)) + '</div>' : '';
     return '<div class="row ' + (act ? 'tap' : '') + '" ' + (act ? 'data-act="' + act + '" ' + (extra || '') : '') + '>' + ic +
@@ -380,7 +433,7 @@
   /* ── Toki 式登录（参考 toki.com：Google / 邮箱 / 手机号，同一账户跨端同步） ── */
   function pageLogin() {
     let h = '<div class="login-wrap">';
-    h += '<div class="login-logo">' + ico('spark') + '</div><div class="login-ttl">Destiny</div>';
+    h += '<div class="login-logo">' + ico('spark', true) + '</div><div class="login-ttl">Destiny</div>';
     h += '<div class="login-sub">说一句话，剩下的我来办。日程、任务、提醒，像发消息一样简单。</div>';
     if (!state.loginStep) {
       h += '<div class="login-methods">';
@@ -417,7 +470,7 @@
     const running = state.tasks.filter(function (t) { return ['running', 'awaiting', 'paused', 'queued'].indexOf(t.status) >= 0; });
     const p = pendingCount(); const doneToday = state.tasks.filter(function (t) { return t.status === 'done'; }).length;
     let h = '';
-    h += '<div class="card hero"><div class="hero-greet">' + greeting() + ' 👋</div>';
+    h += '<div class="card hero"><div class="hero-greet">' + greeting() + ' ' + ico(new Date().getHours() < 18 ? 'sun' : 'moon') + '</div>';
     h += '<div class="hero-status">' + esc(statusLine()) + '</div></div>';
 
     if (running.length) {
@@ -425,7 +478,7 @@
       running.slice(0, 3).forEach(function (t) {
         const now = t.status === 'running' && t.steps.length ? t.steps[t.steps.length - 1].title : stLabel(t.status);
         h += '<div class="it tap" data-act="open-task" data-id="' + t.id + '">' +
-          '<div class="av">' + esc((t.app || '?')[0]) + '</div>' +
+          '<div class="av">' + appIcon(t.app) + '</div>' +
           '<div class="rt"><b>' + esc(t.text) + '</b><small>' + esc(now) + (t.steps.length ? ' · 第 ' + t.steps.length + ' 步' : '') + '</small></div>' +
           '<span class="t mono">' + stLabel(t.status) + '</span></div>';
       });
@@ -439,7 +492,7 @@
       h += '<div class="recent">';
       recents.forEach(function (t) {
         h += '<div class="it tap" data-act="open-task" data-id="' + t.id + '">' +
-          '<div class="av">' + esc((t.app || '?')[0]) + '</div>' +
+          '<div class="av">' + appIcon(t.app) + '</div>' +
           '<div class="rt"><b>' + esc(t.text) + '</b><small>' + esc(t.app) + ' · ' + stLabel(t.status) + '</small></div>' +
           '<span class="t mono">' + rel(t.createdAt) + '</span></div>';
       });
@@ -513,7 +566,7 @@
       '<button class="cbtn" data-act="chat-voice" title="语音输入" aria-label="语音输入">' + ico('mic') + '</button>' +
       '<input class="inp" id="chatInput" placeholder="说一句要办的事，或贴公众号文章链接…" aria-label="输入任务或公众号链接">' +
       '<button class="cbtn" data-act="chat-attach" title="附件 / 图片" aria-label="添加附件">' + ico('clip') + '</button>' +
-      '<button class="cbtn send" data-act="chat-send" title="发送" aria-label="发送">' + ico('send') + '</button></div>';
+      '<button class="cbtn send" data-act="chat-send" title="发送" aria-label="发送">' + ico('send', true) + '</button></div>';
   }
 
   function pageFeed() {
@@ -539,7 +592,7 @@
     h += '<div class="card"><textarea class="inp" id="ideaInput" placeholder="随手记一个想法…"></textarea>' +
       '<div class="btnrow" style="margin-top:8px"><button class="btn primary sm" data-act="add-idea">记下来</button>' +
       '<button class="btn sm" data-act="go" data-page="feed">并进动态</button></div></div>';
-    if (!state.ideas.length) h += '<div class="empty"><div class="e-ic">' + ico('spark') + '</div><b>还没有想法</b><small>记下来，会自动并进动态的第二态。</small></div>';
+    if (!state.ideas.length) h += '<div class="empty"><div class="e-ic">' + ico('bulb') + '</div><b>还没有想法</b><small>记下来，会自动并进动态的第二态。</small></div>';
     else {
       h += '<div class="card">';
       state.ideas.forEach(function (it, i) {
@@ -638,7 +691,7 @@
         '<button class="btn sm danger" data-act="gate" data-d="deny">拒绝</button></div></div>';
     }
     h += section('运行过程 · 逐步时间线', t.steps.length);
-    if (!t.steps.length) h += '<div class="empty"><div class="e-ic">⏱</div><b>还没开始</b></div>';
+    if (!t.steps.length) h += '<div class="empty"><div class="e-ic">' + ico('clock') + '</div><b>还没开始</b></div>';
     else {
       h += '<div class="tl">';
       t.steps.forEach(function (s, i) {
@@ -665,7 +718,7 @@
     let h = backBar('授权闸门');
     const pending = state.tasks.filter(function (t) { return t.status === 'awaiting'; });
     h += section('待你决定', pending.length);
-    if (!pending.length) h += '<div class="empty"><div class="e-ic">✓</div><b>没有待处理的事</b></div>';
+    if (!pending.length) h += '<div class="empty"><div class="e-ic">' + ico('check') + '</div><b>没有待处理的事</b></div>';
     else pending.forEach(function (t) {
       h += '<div class="card tight" style="cursor:pointer" data-act="open-task" data-id="' + t.id + '">' +
         '<b style="font-weight:500">' + esc(t.text) + '</b><div class="hint" style="margin:4px 0 0">' + esc(gateLabel(t.gate)) + ' · ' + rel(t.createdAt) + '</div></div>';
@@ -730,13 +783,13 @@
       });
     }
     h += section('排队中 · 按优先级', queued.length);
-    if (!queued.length) h += '<div class="empty"><div class="e-ic">⏳</div><b>没有排队中的任务</b></div>';
+    if (!queued.length) h += '<div class="empty"><div class="e-ic">' + ico('list') + '</div><b>没有排队中的任务</b></div>';
     else queued.forEach(function (t, i) {
       h += '<div class="qcard"><div style="display:flex;align-items:center;gap:8px"><span class="pr" style="background:var(--chip-bg)">#' + (i + 1) + '</span>' +
         '<span class="pr" style="' + (t.priority ? 'background:var(--accent);color:#fff' : '') + '">优先' + (t.priority ? ' +' + t.priority : '') + '</span></div>' +
         '<div style="font-weight:500;margin-top:6px;cursor:pointer" data-act="open-task" data-id="' + t.id + '">' + esc(t.text) + '</div>' +
-        '<div class="wait">⏳ ' + queueWaitReason(t) + '</div>' +
-        '<div class="qacts"><button class="btn sm primary" data-act="q-up" data-id="' + t.id + '">↑ 提优先级</button>' +
+        '<div class="wait">' + ico('clock') + ' ' + queueWaitReason(t) + '</div>' +
+        '<div class="qacts"><button class="btn sm primary" data-act="q-up" data-id="' + t.id + '">' + ico('arrowUp') + ' 提优先级</button>' +
         '<button class="btn sm danger" data-act="q-out" data-id="' + t.id + '">移出排队</button></div></div>';
     });
     h += '<div class="notice info">同一 App 互斥：两个微信任务不会真同时动；后到者排队并写明在等谁。点「提优先级」把它排到同 App 队列最前；「移出排队」直接取消，不占槽位。</div>';
@@ -754,7 +807,7 @@
     h += section('技能 · 库存', D.SKILLS.length);
     D.SKILLS.forEach(function (s) {
       const on = state.skills[s.id] !== false ? s.on : false;
-      h += '<div class="row tap" data-act="toggle-skill" data-id="' + s.id + '"><div class="ic">' + ico('spark') + '</div>' +
+      h += '<div class="row tap" data-act="toggle-skill" data-id="' + s.id + '"><div class="ic">' + ico('star') + '</div>' +
         '<div class="lab"><b>' + esc(s.name) + '</b><small>' + esc(s.when) + ' · 不该用：' + esc(s.not) + '</small></div>' + sw(on) + '</div>';
     });
     h += section('MCP 服务 · 默认全关，用到才开', D.MCP.length);
@@ -807,7 +860,7 @@
     h += '</div>';
     h += section('Mika 21 模块 · 你挑的 9 块');
     D.MIKA.forEach(function (m) {
-      h += row((m.picked ? '✓ ' : '　') + esc(m.t), D.MIKA_GROUPS.filter(function (g) { return g.id === m.g; })[0].name, '<span class="mono">' + pad(m.n) + '</span>', null, null, null, null);
+      h += row((m.picked ? ico('check') + ' ' : '　') + esc(m.t), D.MIKA_GROUPS.filter(function (g) { return g.id === m.g; })[0].name, '<span class="mono">' + pad(m.n) + '</span>', null, null, null, null);
     });
     return h;
   }
@@ -826,7 +879,7 @@
     let h = backBar('记忆三分法');
     h += '<div class="notice ok">关于你 / 偏好 / 做法三类。做法要你点头才生效；密码、验证码、卡号不记。</div>';
     h += section('已记', state.memories.length);
-    if (!state.memories.length) h += '<div class="empty"><div class="e-ic">✧</div><b>还没有记忆</b><small>在执行任务中按住一条「做法」，可提交为待批准记忆。</small></div>';
+    if (!state.memories.length) h += '<div class="empty"><div class="e-ic">' + ico('database') + '</div><b>还没有记忆</b><small>在执行任务中按住一条「做法」，可提交为待批准记忆。</small></div>';
     else state.memories.forEach(function (m, i) {
       h += '<div class="card tight"><div style="display:flex;align-items:center;gap:8px"><span class="tag from-c">' + esc(m.kind) + '</span>' +
         (m.approved ? '<span class="tag from-c">已生效</span>' : '<span class="tag from-mibot">待批准</span>') + '</div>' +
@@ -843,7 +896,7 @@
     let h = backBar('定时与条件任务');
     h += '<div class="notice">mibot 的 cron + Mika 的条件触发合并：跟上一次比、一天最多一次、保存前预览接下来三次、结果回原会话。</div>';
     h += section('计划', state.plans.length);
-    if (!state.plans.length) h += '<div class="empty"><div class="e-ic">◷</div><b>还没有计划</b><small>下面加一个：每天 / 每周 · 跟上一次比。</small></div>';
+    if (!state.plans.length) h += '<div class="empty"><div class="e-ic">' + ico('clock') + '</div><b>还没有计划</b><small>下面加一个：每天 / 每周 · 跟上一次比。</small></div>';
     else state.plans.forEach(function (p, i) {
       h += '<div class="card tight"><b style="font-weight:500">' + esc(p.text) + '</b>' +
         '<div class="hint" style="margin:4px 0 0">' + esc(p.kind) + ' · ' + (p.times || []).join(',') + ' · 跟上一次比' + (p.lastFired ? ' · 上次 ' + rel(p.lastFired) : '') + '</div>' +
@@ -1027,7 +1080,7 @@
     let h = backBar('督查与检阅');
     h += '<div class="notice">它先自己核再交给你；待检阅、打回、一次过率都记下来。完成必留一条待检阅。</div>';
     h += section('检阅队列', supervisor.items.length);
-    if (!supervisor.items.length) h += '<div class="empty"><div class="e-ic">✜</div><b>没有待检阅</b><small>完成的任务会出现在这里。</small></div>';
+    if (!supervisor.items.length) h += '<div class="empty"><div class="e-ic">' + ico('activity') + '</div><b>没有待检阅</b><small>完成的任务会出现在这里。</small></div>';
     else supervisor.items.slice(0, 10).forEach(function (it) {
       h += '<div class="card tight"><b style="font-weight:500">' + esc(it.text) + '</b>' +
         '<div class="hint" style="margin:4px 0 0">状态：' + (it.reviewed ? '已检阅' : '待检阅') + '</div></div>';
@@ -1210,12 +1263,12 @@
     if (url) {
       h += '<div class="card"><div class="section-title" style="margin-top:0">文章链接</div>' +
         '<div class="mono" style="font-size:12px;word-break:break-all;color:var(--ink-sub)">' + esc(url) + '</div>' +
-        '<div class="btnrow" style="margin-top:10px"><a class="btn primary sm" href="' + esc(url) + '" target="_blank" rel="noopener">打开原文 ↗</a>' +
+        '<div class="btnrow" style="margin-top:10px"><a class="btn primary sm" href="' + esc(url) + '" target="_blank" rel="noopener">打开原文 ' + ico('arrowUpRight') + '</a>' +
         '<button class="btn sm" data-act="article-to-idea">存进想法</button>' +
         '<button class="btn sm" data-act="chat-attach">朗读 / 摘要</button></div>' +
         '<div class="hint" style="margin-top:8px">标题提取与 AI 摘要需要云端模式（配置模型端点后可用）；本地演示版不做假摘要。</div></div>';
     } else {
-      h += '<div class="empty"><div class="e-ic">▤</div><b>还没有文章链接</b><small>在对话里贴一个 mp.weixin.qq.com 的文章链接试试。</small></div>';
+      h += '<div class="empty"><div class="e-ic">' + ico('book') + '</div><b>还没有文章链接</b><small>在对话里贴一个 mp.weixin.qq.com 的文章链接试试。</small></div>';
     }
     h += section('能力边界（如实标注）');
     h += rowsHtml([
