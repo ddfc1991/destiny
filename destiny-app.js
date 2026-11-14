@@ -36,7 +36,7 @@
   function DEFAULT() {
     return {
       v: 1, theme: 'light', fontSize: 14, mode: 'ask', runtime: 'local', tab: 'chat', page: null,
-      account: null, loginStep: null, chatMsgs: [],
+      account: null, loginStep: null, chatMsgs: [], articleUrl: '',
       selectedTask: null, feedTab: '在看', fusionFilter: 'all',
       cloudEndpoint: '', cloudKey: '', cloudStatus: 'unset', cloudHost: '',
       tasks: [], memories: [], plans: [], approvals: [], ideas: null, notes: [],
@@ -309,6 +309,18 @@
     h += '<div class="card"><div class="hero-greet">' + greeting() + ' 👋</div>';
     h += '<div class="hero-status">' + esc(statusLine()) + '</div></div>';
 
+    if (running.length) {
+      h += '<div class="card"><div class="section-title" style="margin-top:0">接下来 · ' + running.length + ' 个在进行</div>';
+      running.slice(0, 3).forEach(function (t) {
+        const now = t.status === 'running' && t.steps.length ? t.steps[t.steps.length - 1].title : stLabel(t.status);
+        h += '<div class="it tap" data-act="open-task" data-id="' + t.id + '">' +
+          '<div class="av" style="background:var(--' + (t.status === 'awaiting' ? 'amber' : 'blue') + ')">' + esc((t.app || '?')[0]) + '</div>' +
+          '<div class="rt"><b>' + esc(t.text) + '</b><small>' + esc(now) + (t.steps.length ? ' · 第 ' + t.steps.length + ' 步' : '') + '</small></div>' +
+          '<span class="t mono">' + stLabel(t.status) + '</span></div>';
+      });
+      h += '</div>';
+    }
+
     h += '<div class="card"><div class="section-title" style="margin-top:0">最近会话</div>';
     const recents = state.tasks.slice(0, 4);
     if (!recents.length) h += '<div class="hint" style="margin:0">还没有会话。说一句目的，或点下面的能力开始。</div>';
@@ -340,25 +352,46 @@
   }
 
   /* ── Toki 式主界面：聊天流 + 底部输入条，说一句就变成任务 ── */
+  function dayLabel(ts) {
+    const d = new Date(ts), n = new Date();
+    const same = function (a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); };
+    const yest = new Date(n.getTime() - 86400000);
+    if (same(d, n)) return '今天';
+    if (same(d, yest)) return '昨天';
+    return (d.getMonth() + 1) + '月' + d.getDate() + '日';
+  }
   function pageChat() {
     let h = '<div class="chat-stream">';
     if (!state.chatMsgs.length) {
-      h += '<div class="empty"><div class="e-ic">✉</div><b>像发消息一样派事</b><small>说一句目的，Destiny 拆步骤、建任务，该问的会停下来问你。</small></div>';
+      h += '<div class="empty"><div class="e-ic">✉</div><b>像发消息一样派事</b><small>说一句目的，Destiny 拆步骤、建任务，该问的会停下来问你。<br>也可以把公众号文章链接直接发进来。</small></div>';
     }
+    let lastDay = '';
     state.chatMsgs.forEach(function (m) {
+      const day = dayLabel(m.t);
+      if (day !== lastDay) { h += '<div class="day-sep"><span>' + day + '</span></div>'; lastDay = day; }
       const time = '<div class="mt mono">' + hhmm(m.t) + '</div>';
       if (m.role === 'user') {
         h += '<div class="msg me"><div class="bub">' + esc(m.text) + '</div>' + time + '</div>';
       } else {
-        h += '<div class="msg bot"><div class="av" style="background:var(--accent)">◈</div><div class="bub' + (m.link ? ' link tap" data-act="open-task" data-id="' + m.link + '"' : '') + '>' + esc(m.text) + '</div>' + time + '</div>';
+        const go2 = m.link ? ' link tap" data-act="open-task" data-id="' + m.link + '"' : (m.page ? ' link tap" data-act="go" data-page="' + m.page + '"' : '');
+        h += '<div class="msg bot"><div class="av" style="background:var(--accent)">◈</div><div class="bub' + go2 + '>' + esc(m.text) + '</div>' + time + '</div>';
       }
     });
+    // 实时执行指示（Toki 式：Agent 正在做事的呼吸感）
+    const act = state.tasks.filter(function (t) { return ['running', 'queued', 'awaiting', 'paused'].indexOf(t.status) >= 0; });
+    if (act.length) {
+      const t0 = act[0];
+      const now = t0.status === 'running' && t0.steps.length ? '正在执行 · ' + t0.steps[t0.steps.length - 1].title
+        : t0.status === 'awaiting' ? '停在授权闸门 · 等你决定'
+          : t0.status === 'queued' ? '排队中 · ' + (t0.waitingFor ? '在等 ' + t0.waitingFor : '等空闲虚拟屏') : '已暂停';
+      h += '<div class="msg bot"><div class="av" style="background:var(--accent)">◈</div><div class="bub typing-bub"><span class="tdots"><i></i><i></i><i></i></span>' + esc(now) + (act.length > 1 ? '（还有 ' + (act.length - 1) + ' 个在等）' : '') + '</div></div>';
+    }
     h += '</div>';
     h += '<div class="chips chat-chips">' + ['明天下午3点提醒我开会', '每周一9点汇总周报', '帮我在闲鱼回复买家'].map(function (c) {
       return '<button class="chip" data-act="chat-chip" data-v="' + esc(c) + '">' + esc(c) + '</button>';
     }).join('') + '</div>';
     h += '<div class="composer"><button class="cbtn" data-act="chat-voice" title="语音输入">🎤</button>' +
-      '<input class="inp" id="chatInput" placeholder="说一句要办的事…">' +
+      '<input class="inp" id="chatInput" placeholder="说一句要办的事，或贴公众号文章链接…">' +
       '<button class="cbtn" data-act="chat-attach" title="附件 / 图片">📎</button>' +
       '<button class="cbtn send" data-act="chat-send" title="发送">➤</button></div>';
     return h;
@@ -1050,6 +1083,31 @@
     return h;
   }
 
+  /* ── 公众号阅读（文章可读 / 视频受限 · 边界如实标注） ── */
+  function pageArticle() {
+    const url = state.articleUrl || '';
+    let h = backBar('公众号阅读');
+    h += '<div class="notice info">链接已在对话里收到。公众号<b>图文文章</b>是公开网页，可以直接打开读；演示壳不在内部嵌正文（公众号页面禁止被 iframe 嵌入），点「打开原文」看全文。APK 里可长按链接复制后用任意浏览器打开。</div>';
+    if (url) {
+      h += '<div class="card"><div class="section-title" style="margin-top:0">文章链接</div>' +
+        '<div class="mono" style="font-size:12px;word-break:break-all;color:var(--ink-sub)">' + esc(url) + '</div>' +
+        '<div class="btnrow" style="margin-top:10px"><a class="btn primary sm" href="' + esc(url) + '" target="_blank" rel="noopener">打开原文 ↗</a>' +
+        '<button class="btn sm" data-act="article-to-idea">存进想法</button>' +
+        '<button class="btn sm" data-act="chat-attach">朗读 / 摘要</button></div>' +
+        '<div class="hint" style="margin-top:8px">标题提取与 AI 摘要需要云端模式（配置模型端点后可用）；本地演示版不做假摘要。</div></div>';
+    } else {
+      h += '<div class="empty"><div class="e-ic">▤</div><b>还没有文章链接</b><small>在对话里贴一个 mp.weixin.qq.com 的文章链接试试。</small></div>';
+    }
+    h += section('能力边界（如实标注）');
+    h += rowsHtml([
+      row('公众号图文文章', '公开网页，浏览器 / WebView 可直接读，链接发进对话即可', '<span class="tag from-c">可读</span>', null, null, '▤', 'green'),
+      row('文章内嵌视频', '多数走视频 CDN 防盗链，App 内嵌可能黑屏 → 兜底打开原文', '<span class="tag from-mibot">部分受限</span>', null, null, '▶', 'amber'),
+      row('视频号 / 需登录内容', '要微信登录态与授权，演示壳不含；真机走虚拟屏驱动微信 App', '<span class="tag from-mika">需真机</span>', null, null, '▣', 'purple'),
+      row('公众号历史文章列表', '需要公众号会话或搜一搜权限，同样要真机微信', '<span class="tag from-mika">需真机</span>', null, null, '≡', 'slate')
+    ]);
+    return h;
+  }
+
   /* ────────────────────── 路由 ────────────────────── */
   const PAGES = { home: pageHome, chat: pageChat, feed: pageFeed, ideas: pageIdeas, me: pageMe };
   const SUB = {
@@ -1059,7 +1117,7 @@
     diag: pageDiag, about: pageAbout, data: pageData, decisions: pageDecisions, approval: pageApproval,
     supervisor: pageSupervisor, identity: pageIdentity, mcpperm: pageMcpPerm, condition: pageCondition,
     runtime: pageRuntime, mail: pageMail, groups: pageGroups, bots: pageBots, plugins: pagePlugins,
-    sandbox: pageSandbox, vault: pageVault, providers: pageProviders, account: pageAccount
+    sandbox: pageSandbox, vault: pageVault, providers: pageProviders, account: pageAccount, article: pageArticle
   };
   const TITLES = {
     login: ['登录 · Destiny', 'SIGN IN'],
@@ -1071,7 +1129,9 @@
     about: ['关于运行模式', 'ABOUT'], data: ['数据', 'DATA'], decisions: ['代码取舍', 'DECISIONS'], approval: ['审批演练', 'APPROVAL'],
     supervisor: ['督查检阅', 'SUPERVISOR'], identity: ['身份隔离', 'IDENTITY'], mcpperm: ['MCP 最小权限', 'MCP PERM'],
     condition: ['条件状态机', 'CONDITION'], runtime: ['运行模式', 'RUNTIME'], mail: ['AI 邮箱', 'MAIL'], groups: ['群聊', 'GROUPS'],
-    bots: ['机器人', 'BOTS'], plugins: ['插件', 'PLUGINS'], sandbox: ['沙箱', 'SANDBOX'], vault: ['密钥库', 'VAULT'], providers: ['服务商', 'PROVIDERS']
+    bots: ['机器人', 'BOTS'], plugins: ['插件', 'PLUGINS'], sandbox: ['沙箱', 'SANDBOX'], vault: ['密钥库', 'VAULT'], providers: ['服务商', 'PROVIDERS'],
+    account: ['账户关联', 'ACCOUNT'],
+    article: ['公众号阅读', 'ARTICLE']
   };
   const LIVE_PAGES = { home: 1, chat: 1, run: 1, screens: 1, queue: 1, gates: 1, feed: 1, ideas: 1, me: 1 };
 
@@ -1273,7 +1333,19 @@
       if (a === 'chat-send') {
         const inp = $('#chatInput'); const v = (inp && inp.value || '').trim(); if (!v) { toast('先说一句要办的事'); return; }
         if (inp) inp.value = '';
+        const urlM = v.match(/https?:\/\/[^\s]+/);
+        if (urlM && /mp\.weixin\.qq\.com|weixin\.qq\.com\/s/.test(urlM[0])) {
+          state.articleUrl = urlM[0];
+          state.chatMsgs.push({ role: 'user', text: v, t: Date.now() });
+          state.chatMsgs.push({ role: 'bot', text: '收到，公众号文章。图文正文是公开网页，可以直接读；点这句进阅读页。内嵌视频多数有防盗链，兜底用「打开原文」。', t: Date.now(), page: 'article' });
+          state.tab = 'chat'; state.page = null; persist(true); return;
+        }
         createTask(v, guessApp(v), null, true); return;
+      }
+      if (a === 'article-to-idea') {
+        const u = state.articleUrl || ''; if (!u) { toast('还没有文章链接'); return; }
+        state.ideas.unshift({ t: '公众号文章：' + u, tag: '文章', time: '刚刚', pinned: false });
+        toast('已存进想法 · 可并进动态'); persist(true); return;
       }
       if (a === 'chat-chip') {
         const v = el.getAttribute('data-v'); if (v) createTask(v, guessApp(v), null, true); return;
