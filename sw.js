@@ -1,5 +1,5 @@
 /* Destiny · 离线缓存。只在 http(s) 下注册；file:// 打开时不影响运行。 */
-const CACHE = 'destiny-v8';
+const CACHE = 'destiny-v9';
 const FILES = ['index.html', 'destiny.css', 'destiny-data.js', 'destiny-core.js', 'destiny-app.js', 'manifest.webmanifest', 'destiny-icon.svg'];
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); }));

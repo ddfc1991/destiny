@@ -35,6 +35,24 @@ jobs:
           npx cap add android || true
           npx cap sync android
 
+      - name: Apply Destiny launcher icon
+        run: |
+          RES=android/app/src/main/res
+          mkdir -p "$RES/drawable"
+          cp android-icons/ic_launcher_background.xml "$RES/drawable/ic_launcher_background.xml"
+          cp android-icons/ic_launcher_foreground.xml "$RES/drawable/ic_launcher_foreground.xml"
+          for d in "$RES"/mipmap-*; do
+            [ -d "$d" ] || continue
+            case "$(basename "$d")" in
+              mipmap-mdpi) s=48;; mipmap-hdpi) s=72;; mipmap-xhdpi) s=96;;
+              mipmap-xxhdpi) s=144;; mipmap-xxxhdpi) s=192;; *) s=192;;
+            esac
+            [ -f "android-icons/ic_launcher_${s}.png" ] || continue
+            for n in ic_launcher ic_launcher_round; do
+              [ -f "$d/$n.png" ] && cp "android-icons/ic_launcher_${s}.png" "$d/$n.png"
+            done
+          done
+
       - name: Build debug APK
         run: |
           cd android
