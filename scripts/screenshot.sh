@@ -234,5 +234,24 @@ echo "── 崩溃/ANR 检查 ──"
 S dumpsys activity exit-info "$PKG" 2>/dev/null | head -30 || true
 
 echo ""
+echo "══ 滚到底检查（验证长页面完整性）══"
+S cmd uimode night no >/dev/null 2>&1
+sleep 2
+A shell am force-stop "$PKG"
+sleep 1
+S monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
+wait_ready 30
+tap_text "先进去看看" "360" "1150"
+wait_ready 20
+for t in 3 4 5; do
+  tap_tab $t
+  wait_ready 12
+  # 连续上滑到内容底部
+  for i in 1 2 3 4 5; do S input swipe 360 900 360 200 250; sleep 0.4; done
+  sleep 1.2
+  shot "17-tab$t-bottom" 1.5
+done
+
+echo ""
 echo "✅ 截图完成 → $OUT/"
 ls "$OUT"/*.png 2>/dev/null | wc -l | xargs echo "文件数:"
