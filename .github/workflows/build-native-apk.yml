@@ -35,8 +35,11 @@ jobs:
       - name: Install Gradle 8.9
         run: |
           curl -fsSL https://services.gradle.org/distributions/gradle-8.9-bin.zip -o /tmp/gradle.zip
-          sudo unzip -q /tmp/gradle.zip -o -d /opt
+          # 注意：unzip 的修饰符（-o 等）必须放在压缩包名之前，
+          # 写成 `unzip -q file.zip -o -d /opt` 会被当成"要列出的文件名"而报错退出。
+          sudo unzip -q -o /tmp/gradle.zip -d /opt
           echo "/opt/gradle-8.9/bin" >> "$GITHUB_PATH"
+          /opt/gradle-8.9/bin/gradle --version | head -6
 
       - name: Gradle cache
         uses: gradle/actions/setup-gradle@v4
@@ -56,7 +59,7 @@ jobs:
         id: unit
         run: |
           set +e
-          gradle testDebugUnitTest --no-daemon --console=plain > ../unit-test.log 2>&1
+          /opt/gradle-8.9/bin/gradle testDebugUnitTest --no-daemon --console=plain > ../unit-test.log 2>&1
           code=$?
           echo "exit_code=$code" >> ../unit-test.log
           tail -120 ../unit-test.log
@@ -88,11 +91,11 @@ jobs:
         run: |
           set +e
           # 第一轮：开启 R8 混淆 + 资源压缩（体积 ~10.3MB → ~4MB）
-          gradle assembleRelease --no-daemon --console=plain > ../release-build.log 2>&1
+          /opt/gradle-8.9/bin/gradle assembleRelease --no-daemon --console=plain > ../release-build.log 2>&1
           code=$?
           if [ "$code" != "0" ]; then
             echo "::warning::R8 构建失败，自动回退到未混淆模式重试"
-            gradle assembleRelease -Pdestiny.shrink=false --no-daemon --console=plain > ../release-build-fallback.log 2>&1
+            /opt/gradle-8.9/bin/gradle assembleRelease -Pdestiny.shrink=false --no-daemon --console=plain > ../release-build-fallback.log 2>&1
             code=$?
             {
               echo "=== R8 构建失败，已回退到 -Pdestiny.shrink=false ==="
