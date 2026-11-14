@@ -50,16 +50,16 @@ object Icons {
     @Composable get() = painterResource(R.drawable.ic_clip)
 
     val ChevronRight: Painter
-    @Composable get() = painterResource(R.drawable.ic_chevR)
+    @Composable get() = painterResource(R.drawable.ic_chev_r)
 
     val ChevronLeft: Painter
-    @Composable get() = painterResource(R.drawable.ic_chevL)
+    @Composable get() = painterResource(R.drawable.ic_chev_l)
 
     val ChevronDown: Painter
-    @Composable get() = painterResource(R.drawable.ic_chevronDown)
+    @Composable get() = painterResource(R.drawable.ic_chevron_down)
 
     val ChevronUp: Painter
-    @Composable get() = painterResource(R.drawable.ic_chevronUp)
+    @Composable get() = painterResource(R.drawable.ic_chevron_up)
 
     val Search: Painter
     @Composable get() = painterResource(R.drawable.ic_search)
@@ -71,7 +71,7 @@ object Icons {
     @Composable get() = painterResource(R.drawable.ic_check)
 
     val CheckCircle: Painter
-    @Composable get() = painterResource(R.drawable.ic_checkCircle)
+    @Composable get() = painterResource(R.drawable.ic_check_circle)
 
     val Alert: Painter
     @Composable get() = painterResource(R.drawable.ic_alert)
@@ -95,10 +95,10 @@ object Icons {
     @Composable get() = painterResource(R.drawable.ic_download)
 
     val ArrowUp: Painter
-    @Composable get() = painterResource(R.drawable.ic_arrowUp)
+    @Composable get() = painterResource(R.drawable.ic_arrow_up)
 
     val ArrowUpRight: Painter
-    @Composable get() = painterResource(R.drawable.ic_arrowUpRight)
+    @Composable get() = painterResource(R.drawable.ic_arrow_up_right)
 
     val Filter: Painter
     @Composable get() = painterResource(R.drawable.ic_filter)
@@ -155,7 +155,7 @@ object Icons {
     @Composable get() = painterResource(R.drawable.ic_shield)
 
     val ShieldCheck: Painter
-    @Composable get() = painterResource(R.drawable.ic_shieldCheck)
+    @Composable get() = painterResource(R.drawable.ic_shield_check)
 
     val Lock: Painter
     @Composable get() = painterResource(R.drawable.ic_lock)
@@ -176,10 +176,10 @@ object Icons {
     @Composable get() = painterResource(R.drawable.ic_clock)
 
     val ClockCircle: Painter
-    @Composable get() = painterResource(R.drawable.ic_clockCircle)
+    @Composable get() = painterResource(R.drawable.ic_clock_circle)
 
     val CalendarCheck: Painter
-    @Composable get() = painterResource(R.drawable.ic_calendarCheck)
+    @Composable get() = painterResource(R.drawable.ic_calendar_check)
 
     val Book: Painter
     @Composable get() = painterResource(R.drawable.ic_book)
@@ -230,13 +230,13 @@ object Icons {
     @Composable get() = painterResource(R.drawable.ic_grid)
 
     val CircleDot: Painter
-    @Composable get() = painterResource(R.drawable.ic_circleDot)
+    @Composable get() = painterResource(R.drawable.ic_circle_dot)
 
     val MessageSquare: Painter
-    @Composable get() = painterResource(R.drawable.ic_messageSquare)
+    @Composable get() = painterResource(R.drawable.ic_message_square)
 
     val GitBranch: Painter
-    @Composable get() = painterResource(R.drawable.ic_gitBranch)
+    @Composable get() = painterResource(R.drawable.ic_git_branch)
 
     val Target: Painter
     @Composable get() = painterResource(R.drawable.ic_target)
@@ -272,5 +272,5 @@ object Icons {
     @Composable get() = painterResource(R.drawable.ic_star)
 
     val MessageSquareAlt: Painter
-    @Composable get() = painterResource(R.drawable.ic_messageSquare)
+    @Composable get() = painterResource(R.drawable.ic_message_square)
 }

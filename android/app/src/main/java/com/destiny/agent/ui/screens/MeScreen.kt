@@ -474,8 +474,8 @@ fun MeScreen(store: DestinyStore) {
 
 private val LINKABLE: List<Triple<String, Int, String>> = listOf(
     Triple("微信", R.drawable.ic_chat, "扫码绑定后微信里直接派任务"),
-    Triple("飞书", R.drawable.ic_messageSquare, "日报 / 通知推送走群机器人"),
-    Triple("GitHub", R.drawable.ic_gitBranch, "只读；写操作每次单独批准"),
+    Triple("飞书", R.drawable.ic_message_square, "日报 / 通知推送走群机器人"),
+    Triple("GitHub", R.drawable.ic_git_branch, "只读；写操作每次单独批准"),
     Triple("Gmail", R.drawable.ic_mail, "验证码邮件自动填入"),
     Triple("系统日历", R.drawable.ic_calendar, "读你的日程，主动排期"),
     Triple("支付宝", R.drawable.ic_wallet, "金融类 · 默认不放行"),
