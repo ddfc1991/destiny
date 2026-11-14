@@ -8,13 +8,19 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 
 /**
- * 排版系统：衬线展示字 + 无衬线正文（编辑排版风）
+ * 排版系统 · Hark 规范版
  *
- * 展示字用系统衬线族（设备上落 Noto Serif / Noto Serif CJK），中文直接命中
- * 衬线中文字形，不需要额外字体文件，也不会出现"拉丁字好看、中文变黑体"的割裂。
- * 正文用无衬线，字距收紧、行高放松 —— 长对话与长文都耐读。
+ * 一套无衬线族（Hark 禁用衬线展示字与艺术字体）。中文落系统黑体，
+ * 中英混排不会出现"拉丁好看、中文变衬线"的割裂。
+ *
+ * 层级阶梯（h1 标题层 → h2 正文带 → h3 附属）：
+ *   h1  28 / 22 / 18   Bold     ← 页面标题、区块标题、关键数字
+ *   h2  15 / 14 / 13   Regular  ← 正文
+ *   h3  13 / 12 / 11   Medium   ← 标签、时间戳、辅助说明
+ * 主要层级差 = 18 → 15/14 = 4sp ✓（相邻标题层差 6 / 4 ✓）
+ *
+ * 层级只靠字号 + 字重 + 间距建立，不用颜色强行区分。
  */
-private val Display = FontFamily.Serif
 private val Body = FontFamily.SansSerif
 
 private val lh = LineHeightStyle(
@@ -23,68 +29,84 @@ private val lh = LineHeightStyle(
 )
 
 val DestinyTypography = Typography(
-    // 品牌标识 / 页面主标题
+    // ── h1 标题层 ──
     displayLarge = TextStyle(
-        fontFamily = Display, fontWeight = FontWeight.Normal,
-        fontSize = 34.sp, lineHeight = 38.sp, letterSpacing = (-0.8).sp,
+        fontFamily = Body, fontWeight = FontWeight.Bold,
+        fontSize = 28.sp, lineHeight = 34.sp, letterSpacing = (-0.4).sp,
         lineHeightStyle = lh
     ),
     displayMedium = TextStyle(
-        fontFamily = Display, fontWeight = FontWeight.Normal,
-        fontSize = 28.sp, lineHeight = 34.sp, letterSpacing = (-0.6).sp,
+        fontFamily = Body, fontWeight = FontWeight.Bold,
+        fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = (-0.2).sp,
         lineHeightStyle = lh
     ),
     displaySmall = TextStyle(
-        fontFamily = Display, fontWeight = FontWeight.Normal,
-        fontSize = 23.sp, lineHeight = 29.sp, letterSpacing = (-0.4).sp,
+        fontFamily = Body, fontWeight = FontWeight.Bold,
+        fontSize = 18.sp, lineHeight = 24.sp, letterSpacing = 0.sp,
         lineHeightStyle = lh
     ),
-    // 区块标题
     headlineLarge = TextStyle(
-        fontFamily = Display, fontWeight = FontWeight.Medium,
-        fontSize = 20.sp, lineHeight = 26.sp, letterSpacing = (-0.3).sp,
+        fontFamily = Body, fontWeight = FontWeight.Bold,
+        fontSize = 18.sp, lineHeight = 24.sp, letterSpacing = 0.sp,
         lineHeightStyle = lh
     ),
     headlineMedium = TextStyle(
-        fontFamily = Body, fontWeight = FontWeight.SemiBold,
-        fontSize = 17.sp, lineHeight = 23.sp, letterSpacing = (-0.2).sp,
+        fontFamily = Body, fontWeight = FontWeight.Bold,
+        fontSize = 16.sp, lineHeight = 22.sp, letterSpacing = 0.sp,
         lineHeightStyle = lh
     ),
     headlineSmall = TextStyle(
         fontFamily = Body, fontWeight = FontWeight.SemiBold,
-        fontSize = 15.sp, lineHeight = 20.sp, letterSpacing = (-0.1).sp,
+        fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.sp,
         lineHeightStyle = lh
     ),
-    // 正文
+    titleLarge = TextStyle(
+        fontFamily = Body, fontWeight = FontWeight.Bold,
+        fontSize = 18.sp, lineHeight = 24.sp, letterSpacing = 0.sp,
+        lineHeightStyle = lh
+    ),
+    titleMedium = TextStyle(
+        fontFamily = Body, fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp, lineHeight = 22.sp, letterSpacing = 0.sp,
+        lineHeightStyle = lh
+    ),
+    titleSmall = TextStyle(
+        fontFamily = Body, fontWeight = FontWeight.Medium,
+        fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp,
+        lineHeightStyle = lh
+    ),
+
+    // ── h2 正文带 ──
     bodyLarge = TextStyle(
         fontFamily = Body, fontWeight = FontWeight.Normal,
-        fontSize = 15.sp, lineHeight = 23.sp, letterSpacing = 0.sp,
+        fontSize = 15.sp, lineHeight = 22.sp, letterSpacing = 0.sp,
         lineHeightStyle = lh
     ),
     bodyMedium = TextStyle(
         fontFamily = Body, fontWeight = FontWeight.Normal,
-        fontSize = 14.sp, lineHeight = 21.sp, letterSpacing = 0.sp,
+        fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.sp,
         lineHeightStyle = lh
     ),
     bodySmall = TextStyle(
         fontFamily = Body, fontWeight = FontWeight.Normal,
-        fontSize = 12.5.sp, lineHeight = 18.sp, letterSpacing = 0.1.sp,
+        fontSize = 13.sp, lineHeight = 18.sp, letterSpacing = 0.1.sp,
         lineHeightStyle = lh
     ),
-    // 标签
+
+    // ── h3 附属 ──
     labelLarge = TextStyle(
         fontFamily = Body, fontWeight = FontWeight.Medium,
-        fontSize = 13.sp, lineHeight = 17.sp, letterSpacing = 0.1.sp,
+        fontSize = 13.sp, lineHeight = 18.sp, letterSpacing = 0.1.sp,
         lineHeightStyle = lh
     ),
     labelMedium = TextStyle(
         fontFamily = Body, fontWeight = FontWeight.Medium,
-        fontSize = 11.5.sp, lineHeight = 15.sp, letterSpacing = 0.3.sp,
+        fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.2.sp,
         lineHeightStyle = lh
     ),
     labelSmall = TextStyle(
-        fontFamily = Body, fontWeight = FontWeight.Medium,
-        fontSize = 10.sp, lineHeight = 13.sp, letterSpacing = 0.6.sp,
+        fontFamily = Body, fontWeight = FontWeight.Normal,
+        fontSize = 11.sp, lineHeight = 15.sp, letterSpacing = 0.3.sp,
         lineHeightStyle = lh
     )
 )
