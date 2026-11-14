@@ -17,20 +17,24 @@ Daemon will be stopped at the end of the build
 > Task :app:processDebugManifest FROM-CACHE
 > Task :app:processDebugManifestForPackage FROM-CACHE
 > Task :app:processDebugResources FROM-CACHE
-> Task :app:compileDebugKotlin FROM-CACHE
 > Task :app:javaPreCompileDebug FROM-CACHE
-> Task :app:compileDebugJavaWithJavac FROM-CACHE
 > Task :app:preDebugUnitTestBuild UP-TO-DATE
 > Task :app:javaPreCompileDebugUnitTest FROM-CACHE
-> Task :app:processDebugJavaRes
-> Task :app:bundleDebugClassesToCompileJar
+
+> Task :app:compileDebugKotlin
+e: The daemon has terminated unexpectedly on startup attempt #1 with error code: 0. The daemon process output:
+    1. Kotlin compile daemon is ready
+
+> Task :app:compileDebugJavaWithJavac
 > Task :app:bundleDebugClassesToRuntimeJar
-> Task :app:compileDebugUnitTestKotlin FROM-CACHE
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:processDebugJavaRes
+> Task :app:compileDebugUnitTestKotlin
 > Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
 > Task :app:processDebugUnitTestJavaRes
-> Task :app:testDebugUnitTest FROM-CACHE
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/unit-1794631455382.json
+> Task :app:testDebugUnitTest
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/unit-1794633895641.json
 
-BUILD SUCCESSFUL in 14s
-24 actionable tasks: 7 executed, 17 from cache
+BUILD SUCCESSFUL in 41s
+24 actionable tasks: 11 executed, 13 from cache
 exit_code=0
