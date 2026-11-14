@@ -35,7 +35,7 @@ jobs:
       - name: Install Gradle 8.9
         run: |
           curl -fsSL https://services.gradle.org/distributions/gradle-8.9-bin.zip -o /tmp/gradle.zip
-          sudo unzip -q /tmp/gradle.zip -d /opt
+          sudo unzip -q /tmp/gradle.zip -o -d /opt
           echo "/opt/gradle-8.9/bin" >> "$GITHUB_PATH"
 
       - name: Gradle cache
@@ -62,15 +62,79 @@ jobs:
           tail -120 ../unit-test.log
           exit 0
 
+      - name: Collect test metrics
+        id: metrics
+        if: always()
+        run: |
+          TOTAL=0; FAILED=0; SKIPPED=0
+          for f in android/app/build/test-results/testDebugUnitTest/*.xml; do
+            [ -e "$f" ] || continue
+            line=$(grep -m1 '<testsuite ' "$f" || true)
+            t=$(echo "$line" | grep -oE 'tests="[0-9]+"' | grep -oE '[0-9]+' || echo 0)
+            fl=$(echo "$line" | grep -oE 'failures="[0-9]+"' | grep -oE '[0-9]+' || echo 0)
+            er=$(echo "$line" | grep -oE 'errors="[0-9]+"' | grep -oE '[0-9]+' || echo 0)
+            sk=$(echo "$line" | grep -oE 'skipped="[0-9]+"' | grep -oE '[0-9]+' || echo 0)
+            TOTAL=$((TOTAL + ${t:-0}))
+            FAILED=$((FAILED + ${fl:-0} + ${er:-0}))
+            SKIPPED=$((SKIPPED + ${sk:-0}))
+          done
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+          echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
+          echo "📊 单测统计：$TOTAL 个用例 / 失败 $FAILED / 跳过 $SKIPPED"
+
       - name: Build release APK
         working-directory: android
         run: |
           set +e
+          # 第一轮：开启 R8 混淆 + 资源压缩（体积 ~10.3MB → ~4MB）
           gradle assembleRelease --no-daemon --console=plain > ../release-build.log 2>&1
           code=$?
+          if [ "$code" != "0" ]; then
+            echo "::warning::R8 构建失败，自动回退到未混淆模式重试"
+            gradle assembleRelease -Pdestiny.shrink=false --no-daemon --console=plain > ../release-build-fallback.log 2>&1
+            code=$?
+            {
+              echo "=== R8 构建失败，已回退到 -Pdestiny.shrink=false ==="
+              cat ../release-build-fallback.log
+            } >> ../release-build.log
+          fi
           echo "exit_code=$code" >> ../release-build.log
           tail -150 ../release-build.log
           exit $code
+
+      - name: Collect APK
+        id: collect
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk Destiny-native.apk
+          ls -lh Destiny-native.apk
+          SIZE=$(du -h Destiny-native.apk | cut -f1)
+          echo "size=$SIZE" >> $GITHUB_OUTPUT
+          TOTAL="${{ steps.metrics.outputs.total }}"
+          FAILED="${{ steps.metrics.outputs.failed }}"
+          if [ "$FAILED" = "0" ] && [ -n "$TOTAL" ] && [ "$TOTAL" != "0" ]; then
+            echo "tests=$TOTAL 个单元测试用例全部通过" >> $GITHUB_OUTPUT
+          elif [ -n "$TOTAL" ] && [ "$TOTAL" != "0" ]; then
+            echo "tests=单元测试 $FAILED 项失败 / 共 $TOTAL 个用例（详见 build-reports/unit-test.log）" >> $GITHUB_OUTPUT
+          else
+            echo "tests=未解析到测试结果（详见 build-reports/unit-test.log）" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Verify R8 kept serializers
+        run: |
+          set -e
+          rm -rf apk_dex && mkdir -p apk_dex
+          unzip -o -q Destiny-native.apk 'classes*.dex' -d apk_dex
+          ls -la apk_dex
+          FOUND=0
+          for d in apk_dex/classes*.dex; do
+            if grep -aq '\$\$serializer' "$d"; then FOUND=1; fi
+          done
+          if [ "$FOUND" != "1" ]; then
+            echo "::error::R8 裁掉了 kotlinx.serialization 的 \$serializer，反序列化会崩"
+            exit 1
+          fi
+          echo "✅ dex 中保留 \$serializer，序列化链路完好"
 
       - name: Publish build logs to repo
         if: always()
@@ -79,23 +143,15 @@ jobs:
           mkdir -p build-reports
           cp unit-test.log build-reports/unit-test.log 2>/dev/null || echo "no unit-test.log" > build-reports/unit-test.log
           cp release-build.log build-reports/release-build.log 2>/dev/null || echo "no release-build.log" > build-reports/release-build.log
+          printf 'total=%s\nfailed=%s\nskipped=%s\n' \
+            "${{ steps.metrics.outputs.total }}" \
+            "${{ steps.metrics.outputs.failed }}" \
+            "${{ steps.metrics.outputs.skipped }}" > build-reports/test-metrics.txt
           git config user.name "ci-bot"
           git config user.email "ci-bot@users.noreply.github.com"
           git add build-reports/
           git commit -m "ci: publish build logs" || echo "nothing to commit"
           git push || echo "push failed"
-
-      - name: Collect APK
-        id: collect
-        run: |
-          cp android/app/build/outputs/apk/release/app-release.apk Destiny-native.apk
-          ls -lh Destiny-native.apk
-          CODE=$(grep -oE 'exit_code=[0-9]+' unit-test.log 2>/dev/null | tail -1 | cut -d= -f2)
-          if [ "$CODE" = "0" ]; then
-            echo "tests=单元测试全部通过" >> $GITHUB_OUTPUT
-          else
-            echo "tests=单元测试有失败项（详见仓库 build-reports/unit-test.log）" >> $GITHUB_OUTPUT
-          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -115,8 +171,9 @@ jobs:
             - 主动执行：日程到点自动派活、基于你确认过的偏好主动出手
             - 持久记忆：关于你 / 偏好 / 做法三分法，做法要你点头才生效
             - Computer Use：云端电脑操作网页，登录与付款环节交你亲手来
-            - 引擎逻辑自 destiny-core.js 逐节移植，62 项断言在 CI 里跑单元测试
-            - ${{ steps.collect.outputs.tests }}
+            - 引擎逻辑自 destiny-core.js 逐节移植，CI 内跑 JVM 单元测试
+            - 测试结果：${{ steps.collect.outputs.tests }}
+            - 包体积：${{ steps.collect.outputs.size }}（Kotlin 原生 DEX，无任何网页资产）
             - 设计规范：Hark Pro 克制审美（低饱和莫兰迪 / 8pt 圆角栅格 / 单一无衬线 / AI 操作全透明）
           files: Destiny-native.apk
           make_latest: true

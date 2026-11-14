@@ -42,10 +42,12 @@ android {
 
     buildTypes {
         release {
-            // 混淆/资源压缩默认关闭：R8 会裁掉 kotlinx.serialization 的
-            // 反射生成 serializer，导致运行期反序列化崩溃。
-            // 需要瘦身时用 -Pdestiny.shrink=true 打开，并同步补全 proguard-rules.pro。
-            val shrink = (project.findProperty("destiny.shrink") as String?)?.toBoolean() ?: false
+            // R8 混淆/资源压缩：默认开启，体积从 ~10.3MB 降到 ~4MB。
+            // 关键前提是 proguard-rules.pro 完整保留了 kotlinx.serialization
+            // 的 serializer（反射生成，R8 误裁会导致运行期反序列化崩溃），
+            // CI 里有 "Verify R8 kept serializers" 步骤专门盯这条线。
+            // 需要回退时用 -Pdestiny.shrink=false。
+            val shrink = (project.findProperty("destiny.shrink") as String?)?.toBoolean() ?: true
             isMinifyEnabled = shrink
             isShrinkResources = shrink
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
